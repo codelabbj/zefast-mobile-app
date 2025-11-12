@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     maximumScale: 1,
     userScalable: false,
   },
-  themeColor: "#1e3a8a",
+  themeColor: "#ff6010",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -59,17 +59,27 @@ export default function RootLayout({
                 // Listen for various back button events
                 document.addEventListener('backbutton', function(e) {
                   e.preventDefault();
+                  e.stopPropagation();
                   handleBackButton();
                 }, false);
                 
                 window.addEventListener('backbutton', function(e) {
                   e.preventDefault();
+                  e.stopPropagation();
                   handleBackButton();
                 }, false);
                 
-                // Listen for browser back button
+                // Listen for browser back button - ALWAYS prevent default
                 window.addEventListener('popstate', function(e) {
                   e.preventDefault();
+                  e.stopPropagation();
+                  // Push current state back to prevent navigation
+                  if (window.history.state === null) {
+                    window.history.pushState({screen: 'app'}, '', window.location.href);
+                  } else {
+                    // Always push state to prevent back navigation
+                    window.history.pushState({screen: 'app'}, '', window.location.href);
+                  }
                   handleBackButton();
                 });
                 

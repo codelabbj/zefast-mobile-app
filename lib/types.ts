@@ -28,6 +28,8 @@ export interface Platform {
   max_deposit: number
   minimun_with: number
   max_win: number
+  city?: string
+  street?: string
 }
 
 export interface UserPhone {
@@ -80,6 +82,13 @@ export interface Bonus {
   reason_bonus: string
   created_at: string
   user: string
+}
+
+export interface Coupon {
+  id: number
+  created_at: string
+  code: string
+  bet_app: string
 }
 
 export interface PaginatedResponse<T> {

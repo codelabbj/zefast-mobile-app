@@ -52,7 +52,9 @@ api.interceptors.response.use(
     }
 
     // Extract error message from backend response
+    // Priority: details > error > detail > message > string response
     const backendMsg =
+      error.response?.data?.details ||
       error.response?.data?.error ||
       error.response?.data?.detail ||
       error.response?.data?.message ||

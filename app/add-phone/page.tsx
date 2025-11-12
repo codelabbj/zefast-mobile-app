@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AuthGuard } from "@/components/auth-guard"
 import api from "@/lib/api"
 import type { Network } from "@/lib/types"
+import { formatPhoneNumberForAPI } from "@/lib/utils"
 
 function AddPhoneContent() {
   const { t } = useTranslation()
@@ -49,7 +50,7 @@ function AddPhoneContent() {
   const addPhoneMutation = useMutation({
     mutationFn: async () => {
       const response = await api.post("/mobcash/user-phone/", {
-        phone,
+        phone: formatPhoneNumberForAPI(phone),
         network: Number(networkId),
       })
       return response.data
@@ -92,7 +93,7 @@ function AddPhoneContent() {
             >
               <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             </button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 bg-clip-text text-transparent">{t("addPhone")}</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">{t("addPhone")}</h1>
           </div>
         </div>
       </header>

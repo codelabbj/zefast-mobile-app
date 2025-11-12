@@ -23,3 +23,12 @@ export function formatCurrency(amount: number): string {
     minimumFractionDigits: 0,
   }).format(amount)
 }
+
+/**
+ * Formats phone number for API: removes +, spaces, and other non-digit characters
+ * Example: "+229 01 57455419" -> "2290157455419"
+ */
+export function formatPhoneNumberForAPI(phone: string): string {
+  // Remove all non-digit characters (+, spaces, dashes, etc.)
+  return phone.replace(/\D/g, "")
+}

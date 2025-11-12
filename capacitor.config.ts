@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from "@capacitor/cli"
 
 const config: CapacitorConfig = {
-  appId: "com.zefest.app",
-  appName: "Zefest",
+  appId: "com.zefast.app",
+  appName: "Zefast",
   webDir: "out",
   //bundledWebRuntime: false,
   // plugins: {

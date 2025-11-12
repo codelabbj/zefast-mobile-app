@@ -1,5 +1,5 @@
 {
-  "name": "zefest-app",
+  "name": "zefast-app",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@capacitor-firebase/messaging": "^7.3.1",
     "@capacitor/android": "^7.4.4",
+    "@capacitor/app": "^7.1.0",
     "@capacitor/browser": "^7.0.2",
     "@capacitor/cli": "latest",
     "@capacitor/core": "^7.4.4",
@@ -69,6 +70,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useQuery, useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { useRouter } from "next/navigation"
@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { AuthGuard } from "@/components/auth-guard"
 import api from "@/lib/api"
 import type { Platform, Network, UserPhone, UserAppId } from "@/lib/types"
+import { formatPhoneNumberForAPI } from "@/lib/utils"
 
 function DepositContent() {
   const { t } = useTranslation()
@@ -27,6 +28,10 @@ function DepositContent() {
   const [selectedPhone, setSelectedPhone] = useState<UserPhone | null>(null)
   const [amount, setAmount] = useState("")
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const [showTransactionLinkDialog, setShowTransactionLinkDialog] = useState(false)
+  const [transactionLink, setTransactionLink] = useState<string | null>(null)
+  const previousStepRef = useRef(1)
+  const isNavigatingBackRef = useRef(false)
 
   // Fetch platforms
   const { data: platforms, isLoading: loadingPlatforms } = useQuery({
@@ -73,22 +78,49 @@ function DepositContent() {
   // Submit deposit mutation
   const depositMutation = useMutation({
     mutationFn: async () => {
-      const response = await api.post("/mobcash/transaction-deposit", {
+      const payload: any = {
         amount: Number(amount),
-        phone_number: selectedPhone!.phone,
+        phone_number: formatPhoneNumberForAPI(selectedPhone!.phone),
         app: selectedPlatform!.id,
         user_app_id: selectedBetId!.user_app_id,
         network: selectedNetwork!.id,
         source: "web",
-      })
+      }
+      
+      // Add city and street if available from platform
+      if (selectedPlatform!.city) {
+        payload.city = selectedPlatform!.city
+      }
+      if (selectedPlatform!.street) {
+        payload.street = selectedPlatform!.street
+      }
+      
+      const response = await api.post("/mobcash/transaction-deposit", payload)
       return response.data
     },
     onSuccess: (data) => {
       toast.success("Dépôt créé avec succès! En attente de confirmation.")
-      router.push("/dashboard")
+      
+      // Check if transaction_link exists and is not null
+      if (data?.transaction_link) {
+        setTransactionLink(data.transaction_link)
+        setShowTransactionLinkDialog(true)
+      } else {
+        router.push("/dashboard")
+      }
     },
     onError: (error: any) => {
-      toast.error(error.message || "Erreur lors de la création du dépôt")
+      // Check for rate limiting error with time message
+      const errorTimeMessage = 
+        error?.originalError?.response?.data?.error_time_message ||
+        error?.response?.data?.error_time_message
+      
+      if (errorTimeMessage && Array.isArray(errorTimeMessage) && errorTimeMessage.length > 0) {
+        const timeMessage = errorTimeMessage[0]
+        toast.error(`Trop de tentatives. Veuillez réessayer dans ${timeMessage}`)
+      } else {
+        toast.error(error.message || "Erreur lors de la création du dépôt")
+      }
     },
   })
 
@@ -134,6 +166,70 @@ function DepositContent() {
     depositMutation.mutate()
   }
 
+  // Track step changes to detect forward/backward navigation
+  useEffect(() => {
+    const isMovingForward = step > previousStepRef.current
+    const isMovingBackward = step < previousStepRef.current
+    
+    if (isMovingBackward) {
+      isNavigatingBackRef.current = true
+      // Reset the flag after a short delay
+      setTimeout(() => {
+        isNavigatingBackRef.current = false
+      }, 500)
+    } else if (isMovingForward) {
+      isNavigatingBackRef.current = false
+    }
+    
+    previousStepRef.current = step
+  }, [step])
+
+  // Auto-advance when selections are made (only when moving forward)
+  useEffect(() => {
+    if (step === 1 && selectedPlatform && !isNavigatingBackRef.current) {
+      // Small delay to show selection feedback before advancing
+      const timer = setTimeout(() => {
+        if (!isNavigatingBackRef.current) {
+          setStep(2)
+        }
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [step, selectedPlatform])
+
+  useEffect(() => {
+    if (step === 2 && selectedBetId && !isNavigatingBackRef.current) {
+      const timer = setTimeout(() => {
+        if (!isNavigatingBackRef.current) {
+          setStep(3)
+        }
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [step, selectedBetId])
+
+  useEffect(() => {
+    if (step === 3 && selectedNetwork && !isNavigatingBackRef.current) {
+      const timer = setTimeout(() => {
+        if (!isNavigatingBackRef.current) {
+          setStep(4)
+        }
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [step, selectedNetwork])
+
+  useEffect(() => {
+    if (step === 4 && selectedPhone && !isNavigatingBackRef.current) {
+      const timer = setTimeout(() => {
+        if (!isNavigatingBackRef.current) {
+          setStep(5)
+        }
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [step, selectedPhone])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       {/* Mobile Header */}
@@ -147,7 +243,7 @@ function DepositContent() {
               <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             </button>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 bg-clip-text text-transparent">{t("deposit")}</h1>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">{t("deposit")}</h1>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Étape {step} sur 5</p>
             </div>
           </div>
@@ -400,6 +496,18 @@ function DepositContent() {
                   <span className="text-muted-foreground">{t("phone")}</span>
                   <span className="font-medium">{selectedPhone?.phone}</span>
                 </div>
+                {selectedPlatform?.city && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Ville</span>
+                    <span className="font-medium">{selectedPlatform.city}</span>
+                  </div>
+                )}
+                {selectedPlatform?.street && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Rue</span>
+                    <span className="font-medium">{selectedPlatform.street}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -409,7 +517,10 @@ function DepositContent() {
         <div className="flex gap-3">
           {step > 1 && (
             <button
-              onClick={() => setStep(step - 1)}
+              onClick={() => {
+                isNavigatingBackRef.current = true
+                setStep(step - 1)
+              }}
               className="flex-1 h-12 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-700 dark:hover:to-slate-600 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-slate-700 dark:text-slate-300"
             >
               {t("previous")}
@@ -448,6 +559,18 @@ function DepositContent() {
               <span className="text-muted-foreground">{t("phone")}</span>
               <span className="font-medium">{selectedPhone?.phone}</span>
             </div>
+            {selectedPlatform?.city && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Ville</span>
+                <span className="font-medium">{selectedPlatform.city}</span>
+              </div>
+            )}
+            {selectedPlatform?.street && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Rue</span>
+                <span className="font-medium">{selectedPlatform.street}</span>
+              </div>
+            )}
             <div className="flex justify-between text-lg font-bold pt-2 border-t">
               <span>{t("amount")}</span>
               <span className="text-emerald-500">{amount} FCFA</span>
@@ -459,6 +582,40 @@ function DepositContent() {
             </Button>
             <Button onClick={handleConfirm} disabled={depositMutation.isPending} className="flex-1">
               {depositMutation.isPending ? t("loading") : t("confirm")}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Transaction Link Dialog */}
+      <Dialog open={showTransactionLinkDialog} onOpenChange={setShowTransactionLinkDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Continuer la transaction</DialogTitle>
+            <DialogDescription>Cliquez sur continuer pour continuer la transaction</DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-4 pt-4">
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowTransactionLinkDialog(false)
+                router.push("/dashboard")
+              }} 
+              className="flex-1"
+            >
+              Annuler
+            </Button>
+            <Button 
+              onClick={() => {
+                if (transactionLink) {
+                  window.open(transactionLink, '_blank', 'noopener,noreferrer')
+                }
+                setShowTransactionLinkDialog(false)
+                router.push("/dashboard")
+              }} 
+              className="flex-1"
+            >
+              Continuer
             </Button>
           </div>
         </DialogContent>

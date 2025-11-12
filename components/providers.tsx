@@ -9,6 +9,7 @@ import i18n from "@/lib/i18n"
 import { useState, useEffect } from "react"
 import ErrorBoundary from "./error-boundary"
 import { notificationService } from "@/lib/firebase-notifications"
+import { ThemeProvider } from "./theme-provider"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -31,17 +32,19 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <I18nextProvider i18n={i18n}>
-          {children}
-          <Toaster
-            position="top-center"
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background: "#333",
-                color: "#fff",
-              },
-            }}
-          />
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+            <Toaster
+              position="top-center"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: "#333",
+                  color: "#fff",
+                },
+              }}
+            />
+          </ThemeProvider>
         </I18nextProvider>
       </QueryClientProvider>
     </ErrorBoundary>

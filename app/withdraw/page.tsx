@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useQuery, useMutation } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { useRouter } from "next/navigation"
@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { AuthGuard } from "@/components/auth-guard"
 import api from "@/lib/api"
 import type { Platform, Network, UserPhone, UserAppId } from "@/lib/types"
+import { formatPhoneNumberForAPI } from "@/lib/utils"
 
 function WithdrawContent() {
   const { t } = useTranslation()
@@ -28,6 +29,8 @@ function WithdrawContent() {
   const [amount, setAmount] = useState("")
   const [withdrawalCode, setWithdrawalCode] = useState("")
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const previousStepRef = useRef(1)
+  const isNavigatingBackRef = useRef(false)
 
   // Fetch platforms
   const { data: platforms, isLoading: loadingPlatforms } = useQuery({
@@ -74,15 +77,25 @@ function WithdrawContent() {
   // Submit withdrawal mutation
   const withdrawalMutation = useMutation({
     mutationFn: async () => {
-      const response = await api.post("/mobcash/transaction-withdrawal", {
+      const payload: any = {
         amount: Number(amount),
-        phone_number: selectedPhone!.phone,
+        phone_number: formatPhoneNumberForAPI(selectedPhone!.phone),
         app: selectedPlatform!.id,
         user_app_id: selectedBetId!.user_app_id,
         network: selectedNetwork!.id,
         withdriwal_code: withdrawalCode,
         source: "web",
-      })
+      }
+      
+      // Add city and street if available from platform
+      if (selectedPlatform!.city) {
+        payload.city = selectedPlatform!.city
+      }
+      if (selectedPlatform!.street) {
+        payload.street = selectedPlatform!.street
+      }
+      
+      const response = await api.post("/mobcash/transaction-withdrawal", payload)
       return response.data
     },
     onSuccess: (data) => {
@@ -90,7 +103,17 @@ function WithdrawContent() {
       router.push("/dashboard")
     },
     onError: (error: any) => {
-      toast.error(error.message || "Erreur lors de la création du retrait")
+      // Check for rate limiting error with time message
+      const errorTimeMessage = 
+        error?.originalError?.response?.data?.error_time_message ||
+        error?.response?.data?.error_time_message
+      
+      if (errorTimeMessage && Array.isArray(errorTimeMessage) && errorTimeMessage.length > 0) {
+        const timeMessage = errorTimeMessage[0]
+        toast.error(`Trop de tentatives. Veuillez réessayer dans ${timeMessage}`)
+      } else {
+        toast.error(error.message || "Erreur lors de la création du retrait")
+      }
     },
   })
 
@@ -140,6 +163,70 @@ function WithdrawContent() {
     withdrawalMutation.mutate()
   }
 
+  // Track step changes to detect forward/backward navigation
+  useEffect(() => {
+    const isMovingForward = step > previousStepRef.current
+    const isMovingBackward = step < previousStepRef.current
+    
+    if (isMovingBackward) {
+      isNavigatingBackRef.current = true
+      // Reset the flag after a short delay
+      setTimeout(() => {
+        isNavigatingBackRef.current = false
+      }, 500)
+    } else if (isMovingForward) {
+      isNavigatingBackRef.current = false
+    }
+    
+    previousStepRef.current = step
+  }, [step])
+
+  // Auto-advance when selections are made (only when moving forward)
+  useEffect(() => {
+    if (step === 1 && selectedPlatform && !isNavigatingBackRef.current) {
+      // Small delay to show selection feedback before advancing
+      const timer = setTimeout(() => {
+        if (!isNavigatingBackRef.current) {
+          setStep(2)
+        }
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [step, selectedPlatform])
+
+  useEffect(() => {
+    if (step === 2 && selectedBetId && !isNavigatingBackRef.current) {
+      const timer = setTimeout(() => {
+        if (!isNavigatingBackRef.current) {
+          setStep(3)
+        }
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [step, selectedBetId])
+
+  useEffect(() => {
+    if (step === 3 && selectedNetwork && !isNavigatingBackRef.current) {
+      const timer = setTimeout(() => {
+        if (!isNavigatingBackRef.current) {
+          setStep(4)
+        }
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [step, selectedNetwork])
+
+  useEffect(() => {
+    if (step === 4 && selectedPhone && !isNavigatingBackRef.current) {
+      const timer = setTimeout(() => {
+        if (!isNavigatingBackRef.current) {
+          setStep(5)
+        }
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [step, selectedPhone])
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       {/* Mobile Header */}
@@ -153,14 +240,14 @@ function WithdrawContent() {
               <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             </button>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-indigo-500 to-indigo-600 bg-clip-text text-transparent">{t("withdraw")}</h1>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">{t("withdraw")}</h1>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Étape {step} sur 5</p>
             </div>
           </div>
           
           {/* Progress Bar */}
           <div className="h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
-            <div className="h-full bg-gradient-to-r from-indigo-500 to-indigo-600 transition-all duration-300 rounded-full shadow-lg shadow-indigo-500/30" style={{ width: `${(step / 5) * 100}%` }} />
+            <div className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300 rounded-full shadow-lg shadow-primary/30" style={{ width: `${(step / 5) * 100}%` }} />
           </div>
         </div>
       </header>
@@ -184,12 +271,12 @@ function WithdrawContent() {
                       onClick={() => setSelectedPlatform(platform)}
                       className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
                         selectedPlatform?.id === platform.id
-                          ? "border-indigo-500 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-950/30 dark:to-indigo-900/30 shadow-lg shadow-indigo-500/20"
-                          : "border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700 bg-white dark:bg-slate-800"
+                          ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                          : "border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 bg-white dark:bg-slate-800"
                       }`}
                     >
                       {selectedPlatform?.id === platform.id && (
-                        <div className="absolute top-2 right-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full p-1.5 shadow-lg shadow-indigo-500/30">
+                        <div className="absolute top-2 right-2 bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                           <Check className="h-3.5 w-3.5 text-white" />
                         </div>
                       )}
@@ -229,8 +316,8 @@ function WithdrawContent() {
                         onClick={() => setSelectedBetId(betId)}
                         className={`p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
                           selectedBetId?.id === betId.id
-                            ? "border-indigo-500 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-950/30 dark:to-indigo-900/30 shadow-lg shadow-indigo-500/20"
-                            : "border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700 bg-white dark:bg-slate-800"
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                            : "border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 bg-white dark:bg-slate-800"
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -239,7 +326,7 @@ function WithdrawContent() {
                             <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">ID de pari</p>
                           </div>
                           {selectedBetId?.id === betId.id && (
-                            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full p-1.5 shadow-lg shadow-indigo-500/30">
+                            <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                               <Check className="h-4 w-4 text-white" />
                             </div>
                           )}
@@ -279,12 +366,12 @@ function WithdrawContent() {
                       onClick={() => setSelectedNetwork(network)}
                       className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
                         selectedNetwork?.id === network.id
-                          ? "border-indigo-500 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-950/30 dark:to-indigo-900/30 shadow-lg shadow-indigo-500/20"
-                          : "border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700 bg-white dark:bg-slate-800"
+                          ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                          : "border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 bg-white dark:bg-slate-800"
                       }`}
                     >
                       {selectedNetwork?.id === network.id && (
-                        <div className="absolute top-2 right-2 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full p-1.5 shadow-lg shadow-indigo-500/30">
+                        <div className="absolute top-2 right-2 bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                           <Check className="h-3.5 w-3.5 text-white" />
                         </div>
                       )}
@@ -322,8 +409,8 @@ function WithdrawContent() {
                           onClick={() => setSelectedPhone(phone)}
                           className={`p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
                             selectedPhone?.id === phone.id
-                              ? "border-indigo-500 bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-950/30 dark:to-indigo-900/30 shadow-lg shadow-indigo-500/20"
-                              : "border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-700 bg-white dark:bg-slate-800"
+                              ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                              : "border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 bg-white dark:bg-slate-800"
                           }`}
                         >
                           <div className="flex items-center justify-between">
@@ -332,7 +419,7 @@ function WithdrawContent() {
                               <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">Numéro de téléphone</p>
                             </div>
                             {selectedPhone?.id === phone.id && (
-                              <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full p-1.5 shadow-lg shadow-indigo-500/30">
+                              <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                                 <Check className="h-4 w-4 text-white" />
                               </div>
                             )}
@@ -415,6 +502,18 @@ function WithdrawContent() {
                   <span className="text-muted-foreground">{t("phone")}</span>
                   <span className="font-medium">{selectedPhone?.phone}</span>
                 </div>
+                {selectedPlatform?.city && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Ville</span>
+                    <span className="font-medium">{selectedPlatform.city}</span>
+                  </div>
+                )}
+                {selectedPlatform?.street && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Rue</span>
+                    <span className="font-medium">{selectedPlatform.street}</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -424,7 +523,10 @@ function WithdrawContent() {
         <div className="flex gap-3">
           {step > 1 && (
             <button
-              onClick={() => setStep(step - 1)}
+              onClick={() => {
+                isNavigatingBackRef.current = true
+                setStep(step - 1)
+              }}
               className="flex-1 h-12 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-700 dark:hover:to-slate-600 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-slate-700 dark:text-slate-300"
             >
               {t("previous")}
@@ -432,7 +534,7 @@ function WithdrawContent() {
           )}
           <button
             onClick={handleNext}
-            className="flex-1 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 text-white hover:from-indigo-600 hover:to-indigo-700 dark:hover:from-indigo-700 dark:hover:to-indigo-800 active:scale-[0.98] transition-all duration-200 font-bold text-sm shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40"
+            className="flex-1 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent dark:from-primary dark:to-accent text-white hover:from-accent hover:to-primary dark:hover:from-accent dark:hover:to-primary active:scale-[0.98] transition-all duration-200 font-bold text-sm shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40"
           >
             {step === 5 ? t("confirm") : t("next")}
           </button>
@@ -463,13 +565,25 @@ function WithdrawContent() {
               <span className="text-muted-foreground">{t("phone")}</span>
               <span className="font-medium">{selectedPhone?.phone}</span>
             </div>
+            {selectedPlatform?.city && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Ville</span>
+                <span className="font-medium">{selectedPlatform.city}</span>
+              </div>
+            )}
+            {selectedPlatform?.street && (
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Rue</span>
+                <span className="font-medium">{selectedPlatform.street}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-muted-foreground">{t("withdrawalCode")}</span>
               <span className="font-medium">{withdrawalCode}</span>
             </div>
             <div className="flex justify-between text-lg font-bold pt-2 border-t">
               <span>{t("amount")}</span>
-              <span className="text-indigo-500">{amount} FCFA</span>
+              <span className="text-primary">{amount} FCFA</span>
             </div>
           </div>
           <div className="flex gap-4">

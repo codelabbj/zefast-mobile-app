@@ -97,7 +97,7 @@ function TransactionsContent() {
             <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => router.back()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-lg font-bold flex-1">{t("transactions")}</h1>
+            <h1 className="text-lg font-bold flex-1 bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">{t("transactions")}</h1>
             <Button 
               variant="ghost" 
               size="icon" 

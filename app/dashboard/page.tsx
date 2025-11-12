@@ -1,21 +1,41 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { useRouter } from "next/navigation"
-import { ArrowDownCircle, ArrowUpCircle, LogOut, Bell, Gift, ChevronRight, Plus, Minus } from "lucide-react"
+import { useTheme } from "next-themes"
+import { ArrowDownCircle, ArrowUpCircle, LogOut, Bell, Gift, ChevronRight, Plus, Minus, User, Moon, Sun, Ticket } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Switch } from "@/components/ui/switch"
 import { AuthGuard } from "@/components/auth-guard"
 import { getUser, logout } from "@/lib/auth"
 import api from "@/lib/api"
 import type { Transaction } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
+import { FloatingMessageButton } from "@/components/FloatingMessageButton"
 
 function DashboardContent() {
   const { t } = useTranslation()
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
   const user = getUser()
+  const [adImageError, setAdImageError] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const { data: transactions, isLoading } = useQuery({
     queryKey: ["recent-transactions"],
@@ -32,6 +52,30 @@ function DashboardContent() {
       return response.data.results
     },
   })
+
+  // Fetch advertisement
+  const { data: advertisement, isLoading: loadingAd } = useQuery({
+    queryKey: ["advertisement"],
+    queryFn: async () => {
+      try {
+        const response = await api.get("/mobcash/ann")
+        return response.data
+      } catch (error) {
+        return null
+      }
+    },
+  })
+
+  // Fetch settings to check referral_bonus
+  const { data: settings } = useQuery<{ referral_bonus: boolean }>({
+    queryKey: ["settings"],
+    queryFn: async () => {
+      const response = await api.get("/mobcash/setting")
+      return response.data
+    },
+  })
+
+  const referralBonusEnabled = settings?.referral_bonus === true
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -62,8 +106,8 @@ function DashboardContent() {
         <ArrowDownCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
       </div>
     ) : (
-      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-100 to-indigo-200 dark:from-indigo-900/40 dark:to-indigo-800/40 shadow-lg shadow-indigo-500/20 border border-indigo-200/50 dark:border-indigo-700/30">
-        <ArrowUpCircle className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 dark:from-primary/30 dark:to-primary/20 shadow-lg shadow-primary/20 border border-primary/30 dark:border-primary/40">
+        <ArrowUpCircle className="h-6 w-6 text-primary dark:text-primary" />
       </div>
     )
   }
@@ -74,33 +118,87 @@ function DashboardContent() {
       <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-50 safe-area-top shadow-sm">
         <div className="px-5 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                Zefest
-              </h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5 font-medium">
-                {t("hello")}, {user?.first_name || "User"}
-              </p>
+            <div className="flex items-center gap-3">
+              <img 
+                src="/Zefast-logo.png" 
+                alt="Zefast Logo" 
+                className="h-18 w-auto object-contain"
+              />
+              <div>
+                <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+                  {t("hello")}, {user?.first_name || "User"}
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-2">
               <button
-                className="h-11 w-11 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-950/50 dark:hover:to-indigo-950/50 border border-blue-200/50 dark:border-blue-800/30 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
+                className="h-11 w-11 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 hover:from-primary/20 hover:to-primary/10 dark:hover:from-primary/30 dark:hover:to-primary/20 border border-primary/20 dark:border-primary/30 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
                 onClick={() => router.push("/notifications")}
               >
-                <Bell className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <Bell className="h-5 w-5 text-primary dark:text-primary" />
               </button>
               <button
-                className="h-11 w-11 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 hover:from-amber-100 hover:to-orange-100 dark:hover:from-amber-950/50 dark:hover:to-orange-950/50 border border-amber-200/50 dark:border-amber-800/30 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
-                onClick={() => router.push("/bonus")}
+                className="h-11 w-11 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-950/50 dark:hover:to-pink-950/50 border border-purple-200/50 dark:border-purple-800/30 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
+                onClick={() => router.push("/coupon")}
               >
-                <Gift className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <Ticket className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               </button>
-              <button
-                className="h-11 w-11 rounded-2xl bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-950/30 dark:to-pink-950/30 hover:from-red-100 hover:to-pink-100 dark:hover:from-red-950/50 dark:hover:to-pink-950/50 border border-red-200/50 dark:border-red-800/30 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
-                onClick={logout}
-              >
-                <LogOut className="h-5 w-5 text-red-600 dark:text-red-400" />
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="h-11 w-11 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 hover:from-primary/20 hover:to-primary/10 dark:hover:from-primary/30 dark:hover:to-primary/20 border border-primary/20 dark:border-primary/30 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
+                  >
+                    <User className="h-5 w-5 text-primary dark:text-primary" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user?.first_name} {user?.last_name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    className="flex items-center justify-between cursor-pointer"
+                    onSelect={(e) => {
+                      e.preventDefault()
+                      setTheme(theme === "dark" ? "light" : "dark")
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      {mounted && theme === "dark" ? (
+                        <Moon className="h-4 w-4" />
+                      ) : (
+                        <Sun className="h-4 w-4" />
+                      )}
+                      <span>{mounted && theme === "dark" ? "Mode sombre" : "Mode clair"}</span>
+                    </div>
+                    {mounted && (
+                      <Switch
+                        checked={theme === "dark"}
+                        onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+                      />
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onSelect={() => router.push("/profile")}
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    <span>Mon Profil</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    variant="destructive"
+                    className="cursor-pointer"
+                    onSelect={logout}
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    <span>Déconnexion</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
@@ -151,7 +249,7 @@ function DashboardContent() {
           </button>
 
           <button
-            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 dark:from-indigo-600 dark:to-indigo-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 active:scale-[0.97] transition-all duration-300 touch-manipulation"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-accent dark:from-primary dark:to-accent text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 active:scale-[0.97] transition-all duration-300 touch-manipulation"
             onClick={() => router.push("/withdraw")}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -167,6 +265,55 @@ function DashboardContent() {
             </div>
           </button>
         </div>
+
+        {/* Advertisement Section */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 dark:from-primary/20 dark:via-accent/20 dark:to-primary/10 border border-primary/20 dark:border-primary/30 shadow-lg shadow-primary/10 dark:shadow-primary/20">
+          <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
+            {loadingAd ? (
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary flex items-center justify-center">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-[3px] border-solid border-white border-r-transparent"></div>
+              </div>
+            ) : advertisement && (advertisement.image || advertisement.url || (typeof advertisement === 'string' && advertisement)) ? (
+              <img
+                src={advertisement.image || advertisement.url || advertisement}
+                alt="Advertisement"
+                className="w-full h-full object-cover"
+                onError={() => setAdImageError(true)}
+              />
+            ) : !adImageError ? (
+              <img
+                src="/placeholder.jpg"
+                alt="Advertisement"
+                className="w-full h-full object-cover"
+                onError={() => setAdImageError(true)}
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary flex items-center justify-center">
+                <p className="text-white font-bold text-lg">Advertisement</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Bonus Button */}
+        {referralBonusEnabled && (
+          <button
+            className="w-full group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 dark:from-amber-600 dark:to-orange-700 text-white shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 active:scale-[0.97] transition-all duration-300 touch-manipulation"
+            onClick={() => router.push("/bonus")}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="absolute -top-8 -right-8 w-20 h-20 bg-white/20 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative p-4 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-lg">
+                <Gift className="h-6 w-6" />
+              </div>
+              <div className="text-left flex-1 min-w-0">
+                <p className="text-base font-bold">Bonus</p>
+                <p className="text-xs opacity-90 mt-0.5 font-medium">Voir mes bonus</p>
+              </div>
+            </div>
+          </button>
+        )}
 
         {/* Recent Transactions */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
@@ -190,7 +337,7 @@ function DashboardContent() {
           <div>
             {isLoading ? (
               <div className="text-center py-16 text-slate-500">
-                <div className="inline-block h-8 w-8 animate-spin rounded-full border-[3px] border-solid border-indigo-500 border-r-transparent mb-3"></div>
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-[3px] border-solid border-primary border-r-transparent mb-3"></div>
                 <p className="text-sm font-semibold">{t("loading")}</p>
               </div>
             ) : !transactions || transactions.length === 0 ? (
@@ -219,7 +366,7 @@ function DashboardContent() {
                         <p className={`font-black text-[15px] shrink-0 ${
                           transaction.type_trans === "deposit" 
                             ? "text-emerald-600 dark:text-emerald-400" 
-                            : "text-indigo-600 dark:text-indigo-400"
+                            : "text-primary dark:text-primary"
                         }`}>
                           {transaction.type_trans === "deposit" ? "+" : "-"}{transaction.amount.toLocaleString()} FCFA
                         </p>
@@ -237,6 +384,12 @@ function DashboardContent() {
           </div>
         </div>
       </main>
+      
+      {/* Floating Message Button */}
+      <FloatingMessageButton 
+        whatsappNumber="+22900000000"
+        telegramUsername="your_telegram_username"
+      />
     </div>
   )
 }

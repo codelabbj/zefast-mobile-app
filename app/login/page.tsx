@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next"
 import toast from "react-hot-toast"
 import Link from "next/link"
 import { Capacitor } from "@capacitor/core"
+import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -28,6 +29,7 @@ export default function LoginPage() {
   const { t } = useTranslation()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
@@ -67,7 +69,13 @@ export default function LoginPage() {
     <div className="min-h-screen bg-muted/30 flex items-center justify-center p-4">
       <Card className="mobile-card w-full max-w-md">
         <CardHeader className="space-y-3 text-center">
-          <CardTitle className="mobile-heading text-2xl">Zefest</CardTitle>
+          <div className="flex justify-center mb-2">
+            <img 
+              src="/Zefast-logo.png" 
+              alt="Zefast Logo" 
+              className="h-24 w-auto object-contain"
+            />
+          </div>
           <CardDescription className="mobile-text">{t("login")}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -89,14 +97,28 @@ export default function LoginPage() {
 
             <div className="space-y-3">
               <Label htmlFor="password" className="mobile-text font-medium">{t("password")}</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                className="mobile-input"
-                {...register("password")}
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="mobile-input pr-10"
+                  {...register("password")}
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
               {errors.password && <p className="mobile-text text-destructive">{errors.password.message}</p>}
             </div>
 
