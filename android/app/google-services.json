@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "665076337085",
-    "project_id": "turaincash-57c48",
-    "storage_bucket": "turaincash-57c48.firebasestorage.app"
+    "project_number": "571907882935",
+    "project_id": "zefast-9b2d4",
+    "storage_bucket": "zefast-9b2d4.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:665076337085:android:bd4148cd1d989183292ad4",
+        "mobilesdk_app_id": "1:571907882935:android:32be0e7cf9dad92a5af232",
         "android_client_info": {
-          "package_name": "com.turaincash.android"
+          "package_name": "com.zefast.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC7XoTvmAQ5UCViDMtu8yAwNT7GikhW6JU"
+          "current_key": "AIzaSyDwOlZ7Hsdera6XadIgvLhisv3onRfR4C4"
         }
       ],
       "services": {

@@ -14,12 +14,13 @@ import { AuthGuard } from "@/components/auth-guard"
 import api from "@/lib/api"
 import type { Transaction } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
-import { 
-  TYPE_TRANS, 
-  TRANS_STATUS, 
-  getTransactionTypeLabel, 
-  getTransactionStatusLabel 
+import {
+  TYPE_TRANS,
+  TRANS_STATUS,
+  getTransactionTypeLabel,
+  getTransactionStatusLabel
 } from "@/lib/constants"
+import { Footer } from "@/components/Footer"
 
 function TransactionsContent() {
   const { t } = useTranslation()
@@ -241,6 +242,10 @@ function TransactionsContent() {
                   {/* Transaction Details */}
                   <div className="space-y-2 pt-3 border-t">
                     <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">{t("platform")}</span>
+                      <span className="text-sm font-medium">{transaction.app_details?.name || transaction.app}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">{t("phone")}</span>
                       <span className="text-sm font-medium">{transaction.phone_number}</span>
                     </div>
@@ -255,6 +260,9 @@ function TransactionsContent() {
           </div>
         )}
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

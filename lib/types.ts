@@ -30,6 +30,8 @@ export interface Platform {
   max_win: number
   city?: string
   street?: string
+  deposit_tuto_link?: string
+  withdrawal_tuto_link?: string
 }
 
 export interface UserPhone {
@@ -63,6 +65,11 @@ export interface Transaction {
   user_app_id: string
   withdriwal_code?: string
   app: string
+  app_details?: {
+    id: string
+    name: string
+    image: string
+  }
   network: number
   source: SourceType
 }
@@ -89,6 +96,37 @@ export interface Coupon {
   created_at: string
   code: string
   bet_app: string
+}
+
+export interface Advertisement {
+  id: string
+  image: string
+  created_at: string
+  enable: boolean
+}
+
+export interface Settings {
+  id: number
+  minimum_deposit: string
+  minimum_withdrawal: string
+  bonus_percent: string
+  reward_mini_withdrawal: string
+  whatsapp_phone: string | null
+  minimum_solde: string
+  referral_bonus: boolean
+  deposit_reward: boolean
+  deposit_reward_percent: string
+  min_version: string | null
+  last_version: string | null
+  dowload_apk_link: string | null
+  wave_default_link: string
+  orange_default_link: string | null
+  mtn_default_link: string
+  telegram: string | null
+  moov_marchand_phone: string
+  bf_moov_marchand_phone?: string
+  bf_orange_marchand_phone?: string
+  orange_marchand_phone?: string
 }
 
 export interface PaginatedResponse<T> {

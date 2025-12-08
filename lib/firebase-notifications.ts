@@ -59,6 +59,17 @@ export class NotificationService {
 
     onMessage(messaging, (payload) => {
       console.log('Message received:', payload);
+
+      // Dispatch custom event for in-app notification display
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('inAppNotification', {
+          detail: {
+            title: payload.notification?.title || 'Notification',
+            body: payload.notification?.body || '',
+            data: payload.data || {}
+          }
+        }));
+      }
     });
   }
 
@@ -91,6 +102,17 @@ export class NotificationService {
     // Foreground notification
     PushNotifications.addListener('pushNotificationReceived', (notification) => {
       console.log('Push received in foreground:', notification);
+
+      // Dispatch custom event for in-app notification display
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('inAppNotification', {
+          detail: {
+            title: notification.title || 'Notification',
+            body: notification.body || '',
+            data: notification.data || {}
+          }
+        }));
+      }
     });
 
     // Background notification + tapped

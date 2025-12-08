@@ -30,22 +30,28 @@ const TelegramIcon = ({ className }: { className?: string }) => (
 interface FloatingMessageButtonProps {
   whatsappNumber?: string
   telegramUsername?: string
+  whatsappPhone?: string
+  telegram?: string
 }
 
-export function FloatingMessageButton({ 
+export function FloatingMessageButton({
   whatsappNumber = "+22900000000",
-  telegramUsername = "your_telegram_username"
+  telegramUsername = "your_telegram_username",
+  whatsappPhone,
+  telegram
 }: FloatingMessageButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const handleWhatsApp = () => {
-    const url = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}`
+    const phoneNumber = whatsappPhone || whatsappNumber
+    const url = `https://wa.me/${phoneNumber.replace(/\D/g, "")}`
     window.open(url, "_blank")
     setIsOpen(false)
   }
 
   const handleTelegram = () => {
-    const url = `https://t.me/${telegramUsername.replace("@", "")}`
+    const username = telegram || telegramUsername
+    const url = `https://t.me/${username.replace("@", "")}`
     window.open(url, "_blank")
     setIsOpen(false)
   }

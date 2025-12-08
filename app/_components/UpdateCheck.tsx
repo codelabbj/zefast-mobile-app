@@ -224,123 +224,127 @@ async function downloadAndInstall(apkUrl: string) {
 // }
 
 export function UpdateCheck() {
-  const [show, setShow] = useState(false);
-  const [apkUrl, setApkUrl] = useState("");
-  const [manifestVersion, setManifestVersion] = useState("");
-  const [mounted, setMounted] = useState(false);
+  // Update modal functionality commented out
+  // const [show, setShow] = useState(false);
+  // const [apkUrl, setApkUrl] = useState("");
+  // const [manifestVersion, setManifestVersion] = useState("");
+  // const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-    const currentVersion = getCurrentVersion();
+  // useEffect(() => {
+  //   setMounted(true);
+  //   const currentVersion = getCurrentVersion();
 
-    fetch("https://zefast-mobile-app.vercel.app/releases/manifest.json")
-      .then(r => r.json())
-      .then(manifest => {
-        const manifestVersion = manifest.android_version;
-        console.log('Manifest version:', manifestVersion, 'Current version:', currentVersion);
-        
-        // Check if we've already dismissed this version
-        const dismissedVersion = localStorage.getItem('app_dismissed_version');
-        const installedVersion = localStorage.getItem('app_installed_version');
-        const wasDismissed = dismissedVersion === manifestVersion;
-        const isAlreadyInstalled = installedVersion === manifestVersion;
-        
-        console.log('Dismissed version:', dismissedVersion, 'Installed version:', installedVersion);
-        console.log('Was dismissed:', wasDismissed, 'Is installed:', isAlreadyInstalled);
-        
-        // Show update if:
-        // 1. Force update is enabled AND we haven't installed this version yet, OR
-        // 2. There's a newer version available AND we haven't dismissed it AND we haven't installed it
-        const hasNewerVersion = isNewerVersion(manifestVersion, currentVersion);
-        const versionsAreEqual = manifestVersion === currentVersion;
-        
-        // Don't show if versions are equal (already up to date)
-        if (versionsAreEqual) {
-          console.log('Versions are equal, not showing modal');
-          return;
-        }
-        
-        const shouldShow = (manifest.force === true && !isAlreadyInstalled && !wasDismissed) || 
-          (hasNewerVersion && !wasDismissed && !isAlreadyInstalled);
-        
-        console.log('Has newer version:', hasNewerVersion, 'Should show:', shouldShow);
-        
-        if (shouldShow) {
-          setApkUrl(manifest.apk_url);
-          setManifestVersion(manifestVersion);
-          setShow(true);
-        } else {
-          console.log('Modal not showing because:', {
-            force: manifest.force,
-            isAlreadyInstalled,
-            hasNewerVersion,
-            wasDismissed
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error checking for updates:', error);
-      });
-  }, []);
+  //   fetch("https://zefast-mobile-app.vercel.app/releases/manifest.json")
+  //     .then(r => r.json())
+  //     .then(manifest => {
+  //       const manifestVersion = manifest.android_version;
+  //       console.log('Manifest version:', manifestVersion, 'Current version:', currentVersion);
 
-  const handleClose = () => {
-    // Store the dismissed version so we don't show it again
-    if (manifestVersion) {
-      localStorage.setItem('app_dismissed_version', manifestVersion);
-    }
-    setShow(false);
-  };
+  //       // Check if we've already dismissed this version
+  //       const dismissedVersion = localStorage.getItem('app_dismissed_version');
+  //       const installedVersion = localStorage.getItem('app_installed_version');
+  //       const wasDismissed = dismissedVersion === manifestVersion;
+  //       const isAlreadyInstalled = installedVersion === manifestVersion;
 
-  const handleDownload = async () => {
-    // Start download process (don't await - let it run in background)
-    downloadAndInstall(apkUrl).catch(err => {
-      console.error('Download process error:', err);
-    });
-    
-    // After user clicks download, immediately mark as installed and close modal
-    if (manifestVersion) {
-      localStorage.setItem('app_installed_version', manifestVersion);
-      // Also clear dismissed version for this version since they're installing it
-      localStorage.removeItem('app_dismissed_version');
-    }
-    setShow(false);
-  };
+  //       console.log('Dismissed version:', dismissedVersion, 'Installed version:', installedVersion);
+  //       console.log('Was dismissed:', wasDismissed, 'Is installed:', isAlreadyInstalled);
 
-  if (!show || !mounted) return null;
+  //       // Show update if:
+  //       // 1. Force update is enabled AND we haven't installed this version yet, OR
+  //       // 2. There's a newer version available AND we haven't dismissed it AND we haven't installed it
+  //       const hasNewerVersion = isNewerVersion(manifestVersion, currentVersion);
+  //       const versionsAreEqual = manifestVersion === currentVersion;
 
-  const modalContent = (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999]">
-      <div className="bg-white dark:bg-gray-800 p-5 rounded-xl text-center shadow-2xl z-[10000] max-w-md mx-4 relative">
-        {/* Close/Cancel button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          aria-label="Fermer"
-        >
-          <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-        </button>
+  //       // Don't show if versions are equal (already up to date)
+  //       if (versionsAreEqual) {
+  //         console.log('Versions are equal, not showing modal');
+  //         return;
+  //       }
 
-        <h1 className="font-bold text-lg dark:text-white pr-8">Nouvelle mise à jour disponible</h1>
-        <p className="mt-2 mb-4 dark:text-gray-300">Une nouvelle version de l'application est disponible.</p>
+  //       const shouldShow = (manifest.force === true && !isAlreadyInstalled && !wasDismissed) ||
+  //         (hasNewerVersion && !wasDismissed && !isAlreadyInstalled);
 
-        <div className="flex gap-3 justify-center">
-          <button
-            onClick={handleClose}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            Plus tard
-          </button>
-          <button
-            onClick={handleDownload}
-            className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded transition-colors"
-          >
-            Télécharger la mise à jour
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  //       console.log('Has newer version:', hasNewerVersion, 'Should show:', shouldShow);
+
+  //       if (shouldShow) {
+  //         setApkUrl(manifest.apk_url);
+  //         setManifestVersion(manifestVersion);
+  //         setShow(true);
+  //       } else {
+  //         console.log('Modal not showing because:', {
+  //           force: manifest.force,
+  //           isAlreadyInstalled,
+  //           hasNewerVersion,
+  //           wasDismissed
+  //         });
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error('Error checking for updates:', error);
+  //     });
+  // }, []);
+
+  // const handleClose = () => {
+  //   // Store the dismissed version so we don't show it again
+  //   if (manifestVersion) {
+  //     localStorage.setItem('app_dismissed_version', manifestVersion);
+  //   }
+  //   setShow(false);
+  // };
+
+  // const handleDownload = async () => {
+  //   // Start download process (don't await - let it run in background)
+  //   downloadAndInstall(apkUrl).catch(err => {
+  //     console.error('Download process error:', err);
+  //   });
+
+  //   // After user clicks download, immediately mark as installed and close modal
+  //   if (manifestVersion) {
+  //     localStorage.setItem('app_installed_version', manifestVersion);
+  //     // Also clear dismissed version for this version since they're installing it
+  //     localStorage.removeItem('app_dismissed_version');
+  //   }
+  //   setShow(false);
+  // };
+
+  // Update modal commented out
+  // if (!show || !mounted) return null;
+
+  // const modalContent = (
+  //   <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-[9999]">
+  //     <div className="bg-white dark:bg-gray-800 p-5 rounded-xl text-center shadow-2xl z-[10000] max-w-md mx-4 relative">
+  //       {/* Close/Cancel button */}
+  //       <button
+  //         onClick={handleClose}
+  //         className="absolute top-3 right-3 p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+  //         aria-label="Fermer"
+  //       >
+  //         <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+  //       </button>
+
+  //       <h1 className="font-bold text-lg dark:text-white pr-8">Nouvelle mise à jour disponible</h1>
+  //       <p className="mt-2 mb-4 dark:text-gray-300">Une nouvelle version de l'application est disponible.</p>
+
+  //       <div className="flex gap-3 justify-center">
+  //         <button
+  //           onClick={handleClose}
+  //           className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+  //         >
+  //           Plus tard
+  //         </button>
+  //         <button
+  //           onClick={handleDownload}
+  //           className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded transition-colors"
+  //         >
+  //           Télécharger la mise à jour
+  //         </button>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
 
   // Render in a portal at document body level to ensure it's above everything
-  return createPortal(modalContent, document.body);
+  // return createPortal(modalContent, document.body);
+
+  return null;
 }

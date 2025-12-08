@@ -15,17 +15,28 @@ export interface AuthResponse {
   data: User
 }
 
-export const saveAuthData = (authData: AuthResponse) => {
+export const saveAuthData = (authData: AuthResponse, rememberMe: boolean = true) => {
   if (typeof window !== "undefined") {
-    localStorage.setItem("access_token", authData.access)
-    localStorage.setItem("refresh_token", authData.refresh)
-    localStorage.setItem("user", JSON.stringify(authData.data))
+    const storage = rememberMe ? localStorage : sessionStorage
+    storage.setItem("access_token", authData.access)
+    storage.setItem("refresh_token", authData.refresh)
+    storage.setItem("user", JSON.stringify(authData.data))
+    storage.setItem("remember_me", rememberMe.toString())
   }
+}
+
+const getStorage = () => {
+  if (typeof window !== "undefined") {
+    const rememberMe = localStorage.getItem("remember_me") === "true"
+    return rememberMe ? localStorage : sessionStorage
+  }
+  return localStorage
 }
 
 export const getUser = (): User | null => {
   if (typeof window !== "undefined") {
-    const userStr = localStorage.getItem("user")
+    const storage = getStorage()
+    const userStr = storage.getItem("user")
     if (userStr) {
       try {
         return JSON.parse(userStr)
@@ -39,7 +50,8 @@ export const getUser = (): User | null => {
 
 export const getAccessToken = (): string | null => {
   if (typeof window !== "undefined") {
-    return localStorage.getItem("access_token")
+    const storage = getStorage()
+    return storage.getItem("access_token")
   }
   return null
 }
@@ -51,6 +63,7 @@ export const isAuthenticated = (): boolean => {
 export const logout = () => {
   if (typeof window !== "undefined") {
     localStorage.clear()
+    sessionStorage.clear()
     window.location.href = "/login"
   }
 }

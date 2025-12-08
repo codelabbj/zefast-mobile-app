@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AuthGuard } from "@/components/auth-guard"
 import api from "@/lib/api"
-import type { Network } from "@/lib/types"
+import type { Network, UserPhone } from "@/lib/types"
 import { formatPhoneNumberForAPI } from "@/lib/utils"
 
 function AddPhoneContent() {
@@ -26,9 +26,23 @@ function AddPhoneContent() {
 
   const [phone, setPhone] = useState("")
   const [networkId, setNetworkId] = useState<string>("")
+  const [selectedCountry, setSelectedCountry] = useState<string>("ci") // Côte d'Ivoire as default
+
+  // Country data with codes
+  const countries = [
+    { code: "ci", name: "Côte d'Ivoire", dialCode: "+225", flag: "🇨🇮" },
+    { code: "bf", name: "Burkina Faso", dialCode: "+226", flag: "🇧🇫" },
+    { code: "sn", name: "Sénégal", dialCode: "+221", flag: "🇸🇳" },
+    { code: "bj", name: "Bénin", dialCode: "+229", flag: "🇧🇯" },
+  ]
 
   // Get network from URL params
   const preselectedNetworkId = searchParams.get("network")
+  // Check if we should auto-continue after creation
+  const fromPage = searchParams.get("from") // "deposit" or "withdraw"
+  // Check if we're editing an existing phone
+  const editId = searchParams.get("edit")
+  const isEditing = !!editId
 
   // Fetch networks
   const { data: networks, isLoading: loadingNetworks } = useQuery({
@@ -39,6 +53,17 @@ function AddPhoneContent() {
     },
   })
 
+  // Fetch phone to edit
+  const { data: phoneToEdit, isLoading: loadingPhoneToEdit } = useQuery({
+    queryKey: ["phone", editId],
+    queryFn: async () => {
+      if (!editId) return null
+      const response = await api.get<UserPhone>(`/mobcash/user-phone/${editId}`)
+      return response.data
+    },
+    enabled: !!editId,
+  })
+
   // Set preselected network when networks are loaded
   useEffect(() => {
     if (preselectedNetworkId && networks && !networkId) {
@@ -46,11 +71,41 @@ function AddPhoneContent() {
     }
   }, [preselectedNetworkId, networks, networkId])
 
+  // Populate form when editing
+  useEffect(() => {
+    if (phoneToEdit && isEditing) {
+      setNetworkId(phoneToEdit.network.toString())
+
+      // Extract country code and local number from full phone
+      const fullPhone = phoneToEdit.phone
+      if (fullPhone.startsWith('+225')) {
+        setSelectedCountry('ci')
+        setPhone(fullPhone.substring(4)) // Remove +225
+      } else if (fullPhone.startsWith('+226')) {
+        setSelectedCountry('bf')
+        setPhone(fullPhone.substring(4)) // Remove +226
+      } else if (fullPhone.startsWith('+221')) {
+        setSelectedCountry('sn')
+        setPhone(fullPhone.substring(4)) // Remove +221
+      } else if (fullPhone.startsWith('+229')) {
+        setSelectedCountry('bj')
+        setPhone(fullPhone.substring(4)) // Remove +229
+      } else {
+        // Default to Côte d'Ivoire if no country code found
+        setSelectedCountry('ci')
+        setPhone(fullPhone)
+      }
+    }
+  }, [phoneToEdit, isEditing])
+
   // Add phone mutation
   const addPhoneMutation = useMutation({
     mutationFn: async () => {
+      const selectedCountryData = countries.find(c => c.code === selectedCountry)
+      const fullPhoneNumber = selectedCountryData ? selectedCountryData.dialCode + phone : phone
+
       const response = await api.post("/mobcash/user-phone/", {
-        phone: formatPhoneNumberForAPI(phone),
+        phone: formatPhoneNumberForAPI(fullPhoneNumber),
         network: Number(networkId),
       })
       return response.data
@@ -58,6 +113,14 @@ function AddPhoneContent() {
     onSuccess: () => {
       toast.success("Numéro de téléphone ajouté avec succès!")
       queryClient.invalidateQueries({ queryKey: ["phones"] })
+
+      // If coming from deposit/withdraw page, navigate back with continue parameter
+      if (fromPage === "deposit" || fromPage === "withdraw") {
+        router.push(`/${fromPage}?continue=true`)
+        return
+      }
+
+      // Default behavior - go back
       router.back()
     },
     onError: (error: any) => {
@@ -65,11 +128,41 @@ function AddPhoneContent() {
     },
   })
 
+  // Update phone mutation
+  const updatePhoneMutation = useMutation({
+    mutationFn: async () => {
+      const selectedCountryData = countries.find(c => c.code === selectedCountry)
+      const fullPhoneNumber = selectedCountryData ? selectedCountryData.dialCode + phone : phone
+
+      const response = await api.put(`/mobcash/user-phone/${editId}/`, {
+        phone: formatPhoneNumberForAPI(fullPhoneNumber),
+        network: Number(networkId),
+      })
+      return response.data
+    },
+    onSuccess: () => {
+      toast.success("Numéro de téléphone mis à jour avec succès!")
+      queryClient.invalidateQueries({ queryKey: ["phones"] })
+
+      // If coming from deposit/withdraw page, navigate back with continue parameter
+      if (fromPage === "deposit" || fromPage === "withdraw") {
+        router.push(`/${fromPage}?continue=true`)
+        return
+      }
+
+      // Default behavior - go back
+      router.back()
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Erreur lors de la mise à jour du numéro")
+    },
+  })
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!phone || phone.length < 10) {
-      toast.error("Veuillez saisir un numéro de téléphone valide")
+    if (!phone || phone.length < 8) {
+      toast.error("Veuillez saisir un numéro de téléphone valide (au moins 8 chiffres)")
       return
     }
 
@@ -78,7 +171,11 @@ function AddPhoneContent() {
       return
     }
 
-    addPhoneMutation.mutate()
+    if (isEditing && editId) {
+      updatePhoneMutation.mutate()
+    } else {
+      addPhoneMutation.mutate()
+    }
   }
 
   return (
@@ -93,7 +190,9 @@ function AddPhoneContent() {
             >
               <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             </button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">{t("addPhone")}</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">
+              {isEditing ? "Modifier le numéro de téléphone" : t("addPhone")}
+            </h1>
           </div>
         </div>
       </header>
@@ -101,7 +200,9 @@ function AddPhoneContent() {
       <main className="px-5 py-6 pb-8 safe-area-bottom">
         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
           <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Ajouter un numéro de téléphone</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              {isEditing ? "Modifier le numéro de téléphone" : "Ajouter un numéro de téléphone"}
+            </h2>
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">
               {preselectedNetworkId 
                 ? `Ajoutez un nouveau numéro pour ${networks?.find(n => n.id.toString() === preselectedNetworkId)?.public_name || 'le réseau sélectionné'}`
@@ -154,24 +255,42 @@ function AddPhoneContent() {
 
               <div className="space-y-2">
                 <Label htmlFor="phone">{t("phone")}</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder={networks?.find((n) => n.id.toString() === networkId)?.placeholder || "2250700000000"}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
+                <div className="flex gap-2">
+                  <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {countries.map((country) => (
+                        <SelectItem key={country.code} value={country.code}>
+                          <div className="flex items-center gap-2">
+                            <span>{country.flag}</span>
+                            <span>{country.dialCode}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="0700000000"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="flex-1"
+                  />
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  Format: {networks?.find((n) => n.id.toString() === networkId)?.indication || "225"} + numéro
+                  Entrez votre numéro de téléphone local (sans indicatif pays)
                 </p>
               </div>
 
               <button
                 type="submit"
                 className="w-full h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 text-white hover:from-emerald-600 hover:to-emerald-700 dark:hover:from-emerald-700 dark:hover:to-emerald-800 active:scale-[0.98] transition-all duration-200 font-bold text-sm disabled:opacity-50 shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40"
-                disabled={addPhoneMutation.isPending}
+                disabled={addPhoneMutation.isPending || updatePhoneMutation.isPending || loadingPhoneToEdit}
               >
-                {addPhoneMutation.isPending ? t("loading") : "Ajouter"}
+                {(addPhoneMutation.isPending || updatePhoneMutation.isPending) ? t("loading") : (isEditing ? "Modifier" : "Ajouter")}
               </button>
             </form>
           </div>

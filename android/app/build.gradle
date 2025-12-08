@@ -38,25 +38,41 @@ apply plugin: 'com.android.application'
 // }
 
 android {
-    namespace "com.turnaicash.app"
+    namespace "com.zefast.app"
     compileSdkVersion 35
 
     defaultConfig {
 //        applicationId "com.turnaicash.android"
-        applicationId "com.turaincash.android"   // ✅ correct
+        applicationId "com.zefast.app"   // ✅ correct
         minSdkVersion 23
         targetSdkVersion 34
         //targetSdkVersion 35  // <-- update this too for consistency
 
         versionCode 2
-        versionName "1.0.1"
+        versionName "1.0.2"
     }
+
+    signingConfigs {
+        release {
+            storeFile file("zefast.keystore")
+            storePassword "CodeLab1992"
+            keyAlias "zefast"
+            keyPassword "CodeLab1992"
+        }
+    }
+
 
     buildTypes {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+             signingConfig signingConfigs.release
+            //minifyEnabled false
+            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    // Configure Android resources to prevent AAPT2 timeout
+    androidResources {
+        noCompress 'png'
     }
 }
 

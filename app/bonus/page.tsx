@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { AuthGuard } from "@/components/auth-guard"
+import { Footer } from "@/components/Footer"
 import { getUser } from "@/lib/auth"
 import api from "@/lib/api"
 import type { Bonus, PaginatedResponse, Platform, UserAppId } from "@/lib/types"
@@ -54,7 +55,7 @@ function BonusContent() {
     queryFn: async () => {
       if (!selectedPlatform) return []
       const response = await api.get<UserAppId[]>("/mobcash/user-app-id", {
-        params: { bet_app: selectedPlatform },
+        params: { app_name: selectedPlatform },
       })
       return response.data
     },
@@ -65,7 +66,7 @@ function BonusContent() {
   const useBonusMutation = useMutation({
     mutationFn: async () => {
       const response = await api.post("/mobcash/transaction-bonus", {
-        app: selectedPlatform,
+        app_name: selectedPlatform,
         user_app_id: selectedBetId,
         amount: Number(bonusAmount),
       })
@@ -328,6 +329,9 @@ function BonusContent() {
           </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

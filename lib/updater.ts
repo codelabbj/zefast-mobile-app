@@ -2,7 +2,7 @@ import { CapacitorUpdater } from '@capgo/capacitor-updater';
 
 export async function checkForUpdates() {
   try {
-    const response = await fetch('https://trainai-cash.vercel.app/updates/manifest.json');
+    const response = await fetch('https://zefast-mobile-app.vercel.app/updates/manifest.json');
     const manifest = await response.json();
 
     const localVersion = localStorage.getItem('app_version') || '0.0.0';

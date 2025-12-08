@@ -1,5 +1,5 @@
 {
-    "android_version": "1.0.1",
-    "apk_url": "https://zefast-mobile-app-1.vercel.app/releases/app-v1.0.1.apk",
+    "android_version": "1.0.2",
+    "apk_url": "https://zefast-mobile-app.vercel.app/releases/app-v1.0.2.apk",
     "force": true
   }

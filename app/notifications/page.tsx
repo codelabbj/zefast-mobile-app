@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { AuthGuard } from "@/components/auth-guard"
+import { Footer } from "@/components/Footer"
 import api from "@/lib/api"
 import type { Notification, PaginatedResponse } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
@@ -113,6 +114,9 @@ function NotificationsContent() {
           </CardContent>
         </Card>
       </main>
+
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

@@ -19,23 +19,77 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { AuthGuard } from "@/components/auth-guard"
 import { getUser, logout } from "@/lib/auth"
+import { notificationService } from "@/lib/firebase-notifications"
 import api from "@/lib/api"
-import type { Transaction } from "@/lib/types"
+import type { Transaction, Advertisement, PaginatedResponse } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
 import { FloatingMessageButton } from "@/components/FloatingMessageButton"
+import { AdvertisementCarousel } from "@/components/AdvertisementCarousel"
+import { InAppNotification, useInAppNotifications } from "@/components/InAppNotification"
+import { Footer } from "@/components/Footer"
 
 function DashboardContent() {
   const { t } = useTranslation()
   const router = useRouter()
   const { theme, setTheme } = useTheme()
   const user = getUser()
-  const [adImageError, setAdImageError] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const { currentNotification, showNotification, closeNotification } = useInAppNotifications()
 
   // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  // Send FCM token to backend and setup notifications on app visit if user is authenticated
+  useEffect(() => {
+    if (mounted && user) {
+      sendFcmTokenToBackend()
+      setupNotificationListeners()
+    }
+  }, [mounted, user])
+
+  // Function to send FCM token to backend
+  const sendFcmTokenToBackend = async () => {
+    try {
+      const fcmToken = notificationService.getToken()
+      if (!fcmToken || !user) {
+        return
+      }
+
+      console.log('Sending FCM token to backend:', fcmToken)
+
+      // Send FCM token to backend API
+      await api.post('/mobcash/devices/', {
+        registration_id: fcmToken,
+        type: 'android',
+        user_id: user.id
+      })
+
+      console.log('FCM token sent to backend successfully')
+    } catch (error) {
+      console.error('Error sending FCM token to backend:', error)
+      // Don't show error to user as this shouldn't interrupt normal app usage
+    }
+  }
+
+  // Setup notification listeners for in-app display
+  const setupNotificationListeners = () => {
+    // Listen for foreground notifications
+    if (typeof window !== 'undefined') {
+      // Custom event for in-app notifications
+      const handleInAppNotification = (event: any) => {
+        const { title, body, data } = event.detail
+        showNotification(title, body, data)
+      }
+
+      window.addEventListener('inAppNotification', handleInAppNotification)
+
+      return () => {
+        window.removeEventListener('inAppNotification', handleInAppNotification)
+      }
+    }
+  }
 
   const { data: transactions, isLoading } = useQuery({
     queryKey: ["recent-transactions"],
@@ -53,21 +107,22 @@ function DashboardContent() {
     },
   })
 
-  // Fetch advertisement
-  const { data: advertisement, isLoading: loadingAd } = useQuery({
-    queryKey: ["advertisement"],
-    queryFn: async () => {
+  // Fetch advertisements
+  const { data: advertisements, isLoading: loadingAd } = useQuery({
+    queryKey: ["advertisements"],
+    queryFn: async (): Promise<Advertisement[]> => {
       try {
-        const response = await api.get("/mobcash/ann")
-        return response.data
+        const response = await api.get<PaginatedResponse<Advertisement>>("/mobcash/ann")
+        // Filter for enabled advertisements only
+        return response.data.results.filter(ad => ad.enable)
       } catch (error) {
-        return null
+        return []
       }
     },
   })
 
-  // Fetch settings to check referral_bonus
-  const { data: settings } = useQuery<{ referral_bonus: boolean }>({
+  // Fetch settings
+  const { data: settings } = useQuery({
     queryKey: ["settings"],
     queryFn: async () => {
       const response = await api.get("/mobcash/setting")
@@ -268,31 +323,10 @@ function DashboardContent() {
 
         {/* Advertisement Section */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 dark:from-primary/20 dark:via-accent/20 dark:to-primary/10 border border-primary/20 dark:border-primary/30 shadow-lg shadow-primary/10 dark:shadow-primary/20">
-          <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
-            {loadingAd ? (
-              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary flex items-center justify-center">
-                <div className="inline-block h-8 w-8 animate-spin rounded-full border-[3px] border-solid border-white border-r-transparent"></div>
-              </div>
-            ) : advertisement && (advertisement.image || advertisement.url || (typeof advertisement === 'string' && advertisement)) ? (
-              <img
-                src={advertisement.image || advertisement.url || advertisement}
-                alt="Advertisement"
-                className="w-full h-full object-cover"
-                onError={() => setAdImageError(true)}
-              />
-            ) : !adImageError ? (
-              <img
-                src="/placeholder.jpg"
-                alt="Advertisement"
-                className="w-full h-full object-cover"
-                onError={() => setAdImageError(true)}
-              />
-            ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-primary flex items-center justify-center">
-                <p className="text-white font-bold text-lg">Advertisement</p>
-              </div>
-            )}
-          </div>
+          <AdvertisementCarousel
+            advertisements={advertisements || []}
+            isLoading={loadingAd}
+          />
         </div>
 
         {/* Bonus Button */}
@@ -364,15 +398,20 @@ function DashboardContent() {
                           {transaction.type_trans === "deposit" ? t("deposit") : t("withdraw")}
                         </p>
                         <p className={`font-black text-[15px] shrink-0 ${
-                          transaction.type_trans === "deposit" 
-                            ? "text-emerald-600 dark:text-emerald-400" 
+                          transaction.type_trans === "deposit"
+                            ? "text-emerald-600 dark:text-emerald-400"
                             : "text-primary dark:text-primary"
                         }`}>
                           {transaction.type_trans === "deposit" ? "+" : "-"}{transaction.amount.toLocaleString()} FCFA
                         </p>
                       </div>
                       <div className="flex items-center justify-between gap-3">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                          {transaction.app_details?.name || transaction.app}
+                        </p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{formatDate(transaction.created_at)}</p>
+                      </div>
+                      <div className="flex justify-end mt-1">
                         {getStatusBadge(transaction.status)}
                       </div>
                     </div>
@@ -384,11 +423,20 @@ function DashboardContent() {
           </div>
         </div>
       </main>
-      
+
+      {/* Footer */}
+      <Footer />
+
       {/* Floating Message Button */}
-      <FloatingMessageButton 
-        whatsappNumber="+22900000000"
-        telegramUsername="your_telegram_username"
+      <FloatingMessageButton
+        whatsappPhone={settings?.whatsapp_phone}
+        telegram={settings?.telegram}
+      />
+
+      {/* In-App Notification */}
+      <InAppNotification
+        notification={currentNotification}
+        onClose={closeNotification}
       />
     </div>
   )

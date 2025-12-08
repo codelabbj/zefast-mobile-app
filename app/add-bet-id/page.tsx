@@ -38,6 +38,12 @@ function AddBetIdContent() {
   const [searchResult, setSearchResult] = useState<SearchUserResponse | null>(null)
   const [pendingBetId, setPendingBetId] = useState<{ appId: string; betId: string } | null>(null)
 
+  // Check if we should auto-continue after creation
+  const fromPage = searchParams.get("from") // "deposit" or "withdraw"
+  // Check if we're editing an existing bet ID
+  const editId = searchParams.get("edit")
+  const isEditing = !!editId
+
   // Fetch platforms
   const { data: platforms, isLoading: loadingPlatforms } = useQuery({
     queryKey: ["platforms"],
@@ -53,11 +59,22 @@ function AddBetIdContent() {
     queryFn: async () => {
       if (!platformId) return []
       const response = await api.get<UserAppId[]>("/mobcash/user-app-id", {
-        params: { bet_app: platformId },
+        params: { app_name: platformId },
       })
       return response.data
     },
     enabled: !!platformId,
+  })
+
+  // Fetch bet ID to edit
+  const { data: betIdToEdit, isLoading: loadingBetIdToEdit } = useQuery({
+    queryKey: ["bet-id", editId],
+    queryFn: async () => {
+      if (!editId) return null
+      const response = await api.get<UserAppId>(`/mobcash/user-app-id/${editId}`)
+      return response.data
+    },
+    enabled: !!editId,
   })
 
   // Search user mutation
@@ -106,18 +123,34 @@ function AddBetIdContent() {
     },
   })
 
+  // Populate form when editing
+  useEffect(() => {
+    if (betIdToEdit && isEditing) {
+      setAppId(betIdToEdit.user_app_id)
+      setPlatformId(betIdToEdit.app)
+    }
+  }, [betIdToEdit, isEditing])
+
   // Add bet ID mutation
   const addBetIdMutation = useMutation({
     mutationFn: async ({ betId, appId }: { betId: string; appId: string }) => {
       const response = await api.post("/mobcash/user-app-id/", {
         user_app_id: betId,
-        app: appId,
+        app_name: appId,
       })
       return response.data
     },
     onSuccess: () => {
       toast.success("Identifiant de pari ajouté avec succès!")
       queryClient.invalidateQueries({ queryKey: ["bet-ids"] })
+
+      // If coming from deposit/withdraw page, navigate back with continue parameter
+      if (fromPage === "deposit" || fromPage === "withdraw") {
+        router.push(`/${fromPage}?continue=true`)
+        return
+      }
+
+      // Default behavior - stay on page and reset form
       setAppId("")
       setSearchResult(null)
       setPendingBetId(null)
@@ -128,7 +161,7 @@ function AddBetIdContent() {
       if (error?.originalError?.response?.status === 400) {
         const errorData = error.originalError.response.data
         let errorMsg = "Erreur lors de l'ajout de l'identifiant"
-        
+
         // Parse field errors
         if (typeof errorData === 'object') {
           // Check for details field first
@@ -141,7 +174,7 @@ function AddBetIdContent() {
                 return `${field}: ${msgArray.join(', ')}`
               })
               .join('\n')
-            
+
             if (fieldErrors) {
               errorMsg = fieldErrors
             } else if (errorData.detail || errorData.message || errorData.error) {
@@ -149,10 +182,69 @@ function AddBetIdContent() {
             }
           }
         }
-        
+
         toast.error(errorMsg)
       } else {
         toast.error(error.message || "Erreur lors de l'ajout de l'identifiant")
+      }
+    },
+  })
+
+  // Update bet ID mutation
+  const updateBetIdMutation = useMutation({
+    mutationFn: async ({ id, betId, appId }: { id: string; betId: string; appId: string }) => {
+      const response = await api.put(`/mobcash/user-app-id/${id}/`, {
+        user_app_id: betId,
+        app_name: appId,
+      })
+      return response.data
+    },
+    onSuccess: () => {
+      toast.success("Identifiant de pari mis à jour avec succès!")
+      queryClient.invalidateQueries({ queryKey: ["bet-ids"] })
+
+      // If coming from deposit/withdraw page, navigate back with continue parameter
+      if (fromPage === "deposit" || fromPage === "withdraw") {
+        router.push(`/${fromPage}?continue=true`)
+        return
+      }
+
+      // Default behavior - stay on page and reset form
+      setAppId("")
+      setSearchResult(null)
+      setPendingBetId(null)
+      setShowConfirmModal(false)
+    },
+    onError: (error: any) => {
+      // Handle field-specific errors (400 status)
+      if (error?.originalError?.response?.status === 400) {
+        const errorData = error.originalError.response.data
+        let errorMsg = "Erreur lors de la mise à jour de l'identifiant"
+
+        // Parse field errors
+        if (typeof errorData === 'object') {
+          // Check for details field first
+          if (errorData.details) {
+            errorMsg = errorData.details
+          } else {
+            const fieldErrors = Object.entries(errorData)
+              .map(([field, messages]) => {
+                const msgArray = Array.isArray(messages) ? messages : [messages]
+                return `${field}: ${msgArray.join(', ')}`
+              })
+              .join('\n')
+
+            if (fieldErrors) {
+              errorMsg = fieldErrors
+            } else if (errorData.detail || errorData.message || errorData.error) {
+              errorMsg = errorData.detail || errorData.message || errorData.error
+            }
+          }
+        }
+
+        toast.error(errorMsg)
+      } else {
+        toast.error(error.message || "Erreur lors de la mise à jour de l'identifiant")
       }
     },
   })
@@ -174,13 +266,21 @@ function AddBetIdContent() {
   const handleConfirmAdd = (betIdParam?: string, appIdParam?: string) => {
     const finalBetId = betIdParam || pendingBetId?.betId || appId
     const finalAppId = appIdParam || pendingBetId?.appId || platformId
-    
+
     if (!finalBetId || !finalAppId) return
-    
-    addBetIdMutation.mutate({
-      betId: finalBetId,
-      appId: finalAppId,
-    })
+
+    if (isEditing && editId) {
+      updateBetIdMutation.mutate({
+        id: editId,
+        betId: finalBetId,
+        appId: finalAppId,
+      })
+    } else {
+      addBetIdMutation.mutate({
+        betId: finalBetId,
+        appId: finalAppId,
+      })
+    }
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -200,7 +300,9 @@ function AddBetIdContent() {
             >
               <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             </button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">{t("addBetId")}</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">
+              {isEditing ? "Modifier l'identifiant de pari" : t("addBetId")}
+            </h1>
           </div>
         </div>
       </header>
@@ -208,8 +310,12 @@ function AddBetIdContent() {
       <main className="px-5 py-6 pb-8 safe-area-bottom">
         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
           <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Ajouter un identifiant de pari</h2>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Ajoutez votre ID de compte de la plateforme de paris</p>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+              {isEditing ? "Modifier l'identifiant de pari" : "Ajouter un identifiant de pari"}
+            </h2>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">
+              {isEditing ? "Modifiez votre ID de compte de la plateforme de paris" : "Ajoutez votre ID de compte de la plateforme de paris"}
+            </p>
           </div>
           <div className="p-5">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -268,7 +374,7 @@ function AddBetIdContent() {
               <button
                 type="submit"
                 className="w-full h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 text-white hover:from-emerald-600 hover:to-emerald-700 dark:hover:from-emerald-700 dark:hover:to-emerald-800 active:scale-[0.98] transition-all duration-200 font-bold text-sm disabled:opacity-50 shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40"
-                disabled={searchUserMutation.isPending}
+                disabled={searchUserMutation.isPending || loadingBetIdToEdit}
               >
                 {searchUserMutation.isPending ? t("loading") : "Rechercher"}
               </button>
@@ -343,7 +449,9 @@ function AddBetIdContent() {
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
         <DialogContent className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/30 dark:to-emerald-900/30 border-emerald-200 dark:border-emerald-700">
           <DialogHeader>
-            <DialogTitle className="text-emerald-700 dark:text-emerald-300">Confirmer l'ajout</DialogTitle>
+            <DialogTitle className="text-emerald-700 dark:text-emerald-300">
+              {isEditing ? "Confirmer la modification" : "Confirmer l'ajout"}
+            </DialogTitle>
             <DialogDescription className="text-slate-700 dark:text-slate-300">
               {searchResult && (
                 <div className="space-y-2 mt-2">
@@ -352,7 +460,9 @@ function AddBetIdContent() {
                   <p><strong>Devise:</strong> XOF (27)</p>
                 </div>
               )}
-              <p className="mt-4">Voulez-vous ajouter cet identifiant de pari?</p>
+              <p className="mt-4">
+                Voulez-vous {isEditing ? "modifier" : "ajouter"} cet identifiant de pari?
+              </p>
             </DialogDescription>
           </DialogHeader>
           <div className="flex gap-4 pt-4">
@@ -370,10 +480,10 @@ function AddBetIdContent() {
               onClick={() => {
                 handleConfirmAdd(appId, platformId)
               }}
-              disabled={addBetIdMutation.isPending}
+              disabled={addBetIdMutation.isPending || updateBetIdMutation.isPending}
               className="flex-1 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
             >
-              {addBetIdMutation.isPending ? t("loading") : "Confirmer"}
+              {(addBetIdMutation.isPending || updateBetIdMutation.isPending) ? t("loading") : "Confirmer"}
             </Button>
           </div>
         </DialogContent>
