@@ -10,7 +10,7 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Zefest - Dépôt et Retrait",
+  title: "zefast - Dépôt et Retrait",
   description: "Application de gestion de dépôts et retraits pour paris sportifs",
   generator: "v0.app",
   viewport: {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Zefest",
+    title: "zefast",
   },
   formatDetection: {
     telephone: false,
