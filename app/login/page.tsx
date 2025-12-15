@@ -32,7 +32,14 @@ export default function LoginPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  // Default to remember user on mobile platforms, false on web
+  const [rememberMe, setRememberMe] = useState(() => {
+    if (typeof window !== "undefined") {
+      const platform = Capacitor.getPlatform()
+      return platform === 'android' || platform === 'ios'
+    }
+    return false
+  })
   const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false)
   const [forgotPasswordStep, setForgotPasswordStep] = useState(1)
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false)
