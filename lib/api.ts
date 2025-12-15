@@ -62,16 +62,32 @@ api.interceptors.response.use(
       }
     }
 
-    // Extract error message from backend response
-    // Check for 'details' first (plural), then 'detail' (singular), then other fields
-    const backendMsg =
-      error.response?.data?.details ||
-      error.response?.data?.detail ||
-      error.response?.data?.error ||
-      error.response?.data?.message ||
-      (typeof error.response?.data === "string" ? error.response.data : "Une erreur est survenue. Veuillez réessayer.")
+    // Handle specific HTTP status codes with default French messages
+    let errorMessage = ""
 
-    return Promise.reject({ message: backendMsg, originalError: error })
+    if (error.response?.status >= 500) {
+      // Server errors (500 and above)
+      errorMessage = "Erreur du serveur. Veuillez réessayer plus tard."
+    } else if (error.response?.status === 404) {
+      // Not found errors
+      errorMessage = "Ressource non trouvée. Veuillez vérifier l'URL ou contacter le support."
+    } else if (!error.response) {
+      // Network errors or no response (unrecognized errors)
+      errorMessage = "Erreur de connexion. Vérifiez votre connexion internet et réessayez."
+    } else {
+      // Extract error message from backend response for other status codes
+      // Check for 'details' first (plural), then 'detail' (singular), then other fields
+      const backendMsg =
+        error.response?.data?.details ||
+        error.response?.data?.detail ||
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        (typeof error.response?.data === "string" ? error.response.data : null)
+
+      errorMessage = backendMsg || "Une erreur est survenue. Veuillez réessayer."
+    }
+
+    return Promise.reject({ message: errorMessage, originalError: error })
   },
 )
 
