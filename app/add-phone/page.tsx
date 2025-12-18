@@ -174,7 +174,7 @@ function AddPhoneContent() {
     if (isEditing && editId) {
       updatePhoneMutation.mutate()
     } else {
-      addPhoneMutation.mutate()
+    addPhoneMutation.mutate()
     }
   }
 
@@ -271,14 +271,14 @@ function AddPhoneContent() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <Input
-                    id="phone"
-                    type="tel"
+                <Input
+                  id="phone"
+                  type="tel"
                     placeholder="0700000000"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                     className="flex-1"
-                  />
+                />
                 </div>
                 <p className="text-xs text-muted-foreground">
                   Entrez votre numéro de téléphone local (sans indicatif pays)

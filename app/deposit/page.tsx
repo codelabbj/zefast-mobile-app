@@ -138,18 +138,10 @@ function DepositContent() {
       const payload: any = {
         amount: Number(amount),
         phone_number: formatPhoneNumberForAPI(selectedPhone!.phone),
-        app_name: selectedPlatform!.id,
+        app: selectedPlatform!.id,
         user_app_id: selectedBetId!.user_app_id,
         network: selectedNetwork!.id,
-        source: "web",
-      }
-      
-      // Add city and street if available from platform
-      if (selectedPlatform!.city) {
-        payload.city = selectedPlatform!.city
-      }
-      if (selectedPlatform!.street) {
-        payload.street = selectedPlatform!.street
+        source: "mobile",
       }
       
       const response = await api.post("/mobcash/transaction-deposit", payload)
@@ -157,7 +149,7 @@ function DepositContent() {
     },
     onSuccess: (data) => {
       toast.success("Dépôt créé avec succès! En attente de confirmation.")
-
+      
       // Handle network-specific payment flows
       if (selectedNetwork?.name?.toLowerCase() === 'moov') {
         handleMoovDeposit(data)
@@ -165,11 +157,11 @@ function DepositContent() {
         handleOrangeDeposit(data)
       } else {
         // Default behavior for other networks
-        if (data?.transaction_link) {
-          setTransactionLink(data.transaction_link)
-          setShowTransactionLinkDialog(true)
-        } else {
-          router.push("/dashboard")
+      if (data?.transaction_link) {
+        setTransactionLink(data.transaction_link)
+        setShowTransactionLinkDialog(true)
+      } else {
+        router.push("/dashboard")
         }
       }
     },
@@ -488,11 +480,11 @@ function DepositContent() {
                             <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">ID de pari</p>
                           </div>
                           <div className="flex items-center gap-2 ml-3">
-                            {selectedBetId?.id === betId.id && (
-                              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full p-1.5 shadow-lg shadow-emerald-500/30">
+                          {selectedBetId?.id === betId.id && (
+                            <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full p-1.5 shadow-lg shadow-emerald-500/30">
                                 <Check className="h-3 w-3 text-white" />
-                              </div>
-                            )}
+                            </div>
+                          )}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -607,11 +599,11 @@ function DepositContent() {
                               <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">Numéro de téléphone</p>
                             </div>
                             <div className="flex items-center gap-2 ml-3">
-                              {selectedPhone?.id === phone.id && (
-                                <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full p-1.5 shadow-lg shadow-emerald-500/30">
+                            {selectedPhone?.id === phone.id && (
+                              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full p-1.5 shadow-lg shadow-emerald-500/30">
                                   <Check className="h-3 w-3 text-white" />
-                                </div>
-                              )}
+                              </div>
+                            )}
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
@@ -745,9 +737,9 @@ function DepositContent() {
                   </svg>
                   Comment déposer
                 </button>
-              </div>
             </div>
-          )}
+          </div>
+        )}
 
         {/* Navigation Buttons */}
         <div className="flex gap-3">
@@ -831,24 +823,24 @@ function DepositContent() {
             <DialogDescription>Cliquez sur continuer pour continuer la transaction</DialogDescription>
           </DialogHeader>
           <div className="flex gap-4 pt-4">
-            <Button
-              variant="outline"
+            <Button 
+              variant="outline" 
               onClick={() => {
                 setShowTransactionLinkDialog(false)
                 router.push("/dashboard")
-              }}
+              }} 
               className="flex-1"
             >
               Annuler
             </Button>
-            <Button
+            <Button 
               onClick={() => {
                 if (transactionLink) {
                   window.open(transactionLink, '_blank', 'noopener,noreferrer')
                 }
                 setShowTransactionLinkDialog(false)
                 router.push("/dashboard")
-              }}
+              }} 
               className="flex-1"
             >
               Continuer

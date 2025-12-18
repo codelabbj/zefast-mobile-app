@@ -161,7 +161,7 @@ function AddBetIdContent() {
       if (error?.originalError?.response?.status === 400) {
         const errorData = error.originalError.response.data
         let errorMsg = "Erreur lors de l'ajout de l'identifiant"
-
+        
         // Parse field errors
         if (typeof errorData === 'object') {
           // Check for details field first
@@ -174,7 +174,7 @@ function AddBetIdContent() {
                 return `${field}: ${msgArray.join(', ')}`
               })
               .join('\n')
-
+            
             if (fieldErrors) {
               errorMsg = fieldErrors
             } else if (errorData.detail || errorData.message || errorData.error) {
@@ -182,7 +182,7 @@ function AddBetIdContent() {
             }
           }
         }
-
+        
         toast.error(errorMsg)
       } else {
         toast.error(error.message || "Erreur lors de l'ajout de l'identifiant")
@@ -266,9 +266,9 @@ function AddBetIdContent() {
   const handleConfirmAdd = (betIdParam?: string, appIdParam?: string) => {
     const finalBetId = betIdParam || pendingBetId?.betId || appId
     const finalAppId = appIdParam || pendingBetId?.appId || platformId
-
+    
     if (!finalBetId || !finalAppId) return
-
+    
     if (isEditing && editId) {
       updateBetIdMutation.mutate({
         id: editId,
@@ -276,10 +276,10 @@ function AddBetIdContent() {
         appId: finalAppId,
       })
     } else {
-      addBetIdMutation.mutate({
-        betId: finalBetId,
-        appId: finalAppId,
-      })
+    addBetIdMutation.mutate({
+      betId: finalBetId,
+      appId: finalAppId,
+    })
     }
   }
 

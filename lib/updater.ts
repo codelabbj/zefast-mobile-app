@@ -13,7 +13,7 @@ export async function checkForUpdates() {
     const localVersion = localStorage.getItem('app_version') || '0.0.0';
     if (manifest.android_version !== localVersion) {
       console.log(`New version ${manifest.android_version} found, downloading...`);
-
+      
       const result = await CapacitorUpdater.download({
         url: manifest.apk_url,
         version: manifest.android_version,

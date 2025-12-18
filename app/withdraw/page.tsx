@@ -137,19 +137,11 @@ function WithdrawContent() {
       const payload: any = {
         amount: Number(amount),
         phone_number: formatPhoneNumberForAPI(selectedPhone!.phone),
-        app_name: selectedPlatform!.id,
+        app: selectedPlatform!.id,
         user_app_id: selectedBetId!.user_app_id,
         network: selectedNetwork!.id,
         withdriwal_code: withdrawalCode,
-        source: "web",
-      }
-      
-      // Add city and street if available from platform
-      if (selectedPlatform!.city) {
-        payload.city = selectedPlatform!.city
-      }
-      if (selectedPlatform!.street) {
-        payload.street = selectedPlatform!.street
+        source: "mobile",
       }
       
       const response = await api.post("/mobcash/transaction-withdrawal", payload)
@@ -165,7 +157,7 @@ function WithdrawContent() {
         handleOrangeWithdrawal(data)
       } else {
         // Default behavior for other networks
-        router.push("/dashboard")
+      router.push("/dashboard")
       }
     },
     onError: (error: any) => {
@@ -487,11 +479,11 @@ function WithdrawContent() {
                             <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">ID de pari</p>
                           </div>
                           <div className="flex items-center gap-2 ml-3">
-                            {selectedBetId?.id === betId.id && (
-                              <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                          {selectedBetId?.id === betId.id && (
+                            <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                                 <Check className="h-3 w-3 text-white" />
-                              </div>
-                            )}
+                            </div>
+                          )}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -606,11 +598,11 @@ function WithdrawContent() {
                               <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">Numéro de téléphone</p>
                             </div>
                             <div className="flex items-center gap-2 ml-3">
-                              {selectedPhone?.id === phone.id && (
-                                <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                            {selectedPhone?.id === phone.id && (
+                              <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                                   <Check className="h-3 w-3 text-white" />
-                                </div>
-                              )}
+                              </div>
+                            )}
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()

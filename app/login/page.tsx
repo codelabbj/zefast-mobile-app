@@ -173,7 +173,7 @@ export default function LoginPage() {
 
       saveAuthData(response.data, rememberMe)
       toast.success("Connexion réussie!")
-
+      
       // Request notification permissions on mobile before showing dashboard
       const platform = Capacitor.getPlatform()
       if (platform === 'ios' || platform === 'android') {
@@ -187,7 +187,7 @@ export default function LoginPage() {
 
       // Register FCM token with backend after successful login
       await registerFcmToken(userData.id, access)
-
+      
       router.push("/dashboard")
     } catch (error: any) {
       toast.error(error.message || "Erreur de connexion")

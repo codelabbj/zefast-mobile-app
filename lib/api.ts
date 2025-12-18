@@ -77,11 +77,11 @@ api.interceptors.response.use(
     } else {
       // Extract error message from backend response for other status codes
       // Check for 'details' first (plural), then 'detail' (singular), then other fields
-      const backendMsg =
-        error.response?.data?.details ||
+    const backendMsg =
+      error.response?.data?.details ||
         error.response?.data?.detail ||
-        error.response?.data?.error ||
-        error.response?.data?.message ||
+      error.response?.data?.error ||
+      error.response?.data?.message ||
         (typeof error.response?.data === "string" ? error.response.data : null)
 
       errorMessage = backendMsg || "Une erreur est survenue. Veuillez réessayer."
