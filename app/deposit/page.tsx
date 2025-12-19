@@ -39,6 +39,14 @@ function DepositContent() {
   const previousStepRef = useRef(1)
   const isNavigatingBackRef = useRef(false)
 
+  const selectedNetworkName = selectedNetwork?.name?.toLowerCase()
+  const isMoovNetwork = selectedNetworkName === "moov"
+  const parsedAmount = Number(amount)
+  const moovAdjustedAmount =
+    isMoovNetwork && Number.isFinite(parsedAmount) && parsedAmount > 0
+      ? Math.max(0, Math.floor(parsedAmount - parsedAmount * 0.01))
+      : null
+
   // Fetch platforms
   const { data: platforms, isLoading: loadingPlatforms } = useQuery({
     queryKey: ["platforms"],
@@ -226,17 +234,13 @@ function DepositContent() {
   const handleMoovDeposit = (transactionData: any) => {
     if (!settings || !selectedNetwork) return
 
-    // Calculate amount minus 1%
-    const originalAmount = Number(amount)
-    const adjustedAmount = Math.floor(originalAmount - (originalAmount * 0.01))
-
     // Get the correct merchant phone based on country code
     let merchantPhone = settings.moov_marchand_phone
     if (selectedNetwork.country_code?.toLowerCase() === 'bf') {
       merchantPhone = settings.bf_moov_marchand_phone || settings.moov_marchand_phone
     }
 
-    const ussdCode = `*155*2*1*${merchantPhone}*${adjustedAmount}#`
+    const ussdCode = `*155*2*1*${merchantPhone}#`
 
     // Try to open phone dialer
     try {
@@ -672,6 +676,19 @@ function DepositContent() {
                   className="mobile-input text-lg"
                 />
               </div>
+              {isMoovNetwork && (
+                <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/70 p-4 text-sm text-slate-700 space-y-1">
+                  <p className="text-xs font-semibold text-emerald-600">
+                    Montant Moov calculé :
+                    <span className="ml-1 text-emerald-600">
+                      {moovAdjustedAmount !== null ? `${moovAdjustedAmount.toLocaleString("fr-FR")} FCFA` : "—"}
+                    </span>
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    Lors de la suite via le code USSD, vous devrez saisir ce montant manuellement.
+                  </p>
+                </div>
+              )}
 
               {/* Summary */}
               <div className="p-5 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl space-y-3 text-sm border border-slate-200 dark:border-slate-600 shadow-inner">
@@ -930,6 +947,11 @@ function DepositContent() {
                 Composer
               </Button>
             </div>
+            {isMoovNetwork && (
+              <p className="text-xs text-center text-muted-foreground">
+                Après avoir composé ce code USSD, saisissez {moovAdjustedAmount !== null ? `${moovAdjustedAmount.toLocaleString("fr-FR")} FCFA` : "le montant saisi"} dans le menu Moov.
+              </p>
+            )}
           </div>
           <div className="flex gap-4 pt-4">
             <Button

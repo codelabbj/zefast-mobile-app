@@ -38,6 +38,14 @@ function WithdrawContent() {
   const previousStepRef = useRef(1)
   const isNavigatingBackRef = useRef(false)
 
+  const selectedNetworkName = selectedNetwork?.name?.toLowerCase()
+  const isMoovNetwork = selectedNetworkName === "moov"
+  const withdrawNumericAmount = Number(amount)
+  const formattedWithdrawAmount =
+    Number.isFinite(withdrawNumericAmount) && withdrawNumericAmount > 0
+      ? `${withdrawNumericAmount.toLocaleString("fr-FR")} FCFA`
+      : "le montant indiqué"
+
   // Fetch platforms
   const { data: platforms, isLoading: loadingPlatforms } = useQuery({
     queryKey: ["platforms"],
@@ -228,16 +236,13 @@ function WithdrawContent() {
       return
     }
 
-    // For withdrawals, use the full amount (no percentage deduction)
-    const withdrawalAmount = Number(amount)
-
     // Get the correct merchant phone based on country code
     let merchantPhone = settings.moov_marchand_phone
     if (selectedNetwork.country_code?.toLowerCase() === 'bf') {
       merchantPhone = settings.bf_moov_marchand_phone || settings.moov_marchand_phone
     }
 
-    const ussdCode = `*155*2*1*${merchantPhone}*${withdrawalAmount}#`
+    const ussdCode = `*155*2*1*${merchantPhone}#`
 
     // Try to open phone dialer
     try {
@@ -671,6 +676,16 @@ function WithdrawContent() {
                   className="mobile-input text-lg"
                 />
               </div>
+              {isMoovNetwork && (
+                <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/70 p-4 text-xs text-slate-600 space-y-1">
+                  <p className="font-semibold text-emerald-600">
+                    Le code USSD Moov ne pré-remplit plus le montant.
+                  </p>
+                  <p className="text-emerald-700">
+                    Vous devrez saisir manuellement {formattedWithdrawAmount} une fois que vous aurez composé le code.
+                  </p>
+                </div>
+              )}
 
               <div className="space-y-3">
                 <Label htmlFor="withdrawalCode" className="mobile-text font-medium">{t("withdrawalCode")}</Label>
@@ -914,6 +929,11 @@ function WithdrawContent() {
                 Composer
               </Button>
             </div>
+            {isMoovNetwork && (
+              <p className="text-xs text-center text-muted-foreground">
+                Composez ce code, puis saisissez {formattedWithdrawAmount}.
+              </p>
+            )}
           </div>
           <div className="flex gap-4 pt-4">
             <Button
