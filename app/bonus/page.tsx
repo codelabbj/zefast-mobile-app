@@ -135,7 +135,6 @@ function BonusContent() {
       <main className="px-5 py-6 space-y-5 pb-8 safe-area-bottom">
         {/* Current Bonus Card */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/70 via-accent/60 to-primary/80 text-white shadow-2xl shadow-primary/30">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/70 via-accent/60 to-primary/80 text-white shadow-2xl shadow-primary/30">
           <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
           <div className="absolute -top-32 -right-32 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
