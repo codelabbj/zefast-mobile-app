@@ -289,16 +289,16 @@ function AddBetIdContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-background dark:bg-background">
       {/* Header */}
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-50 safe-area-top shadow-sm">
+      <header className="bg-card/80 dark:bg-card/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50 safe-area-top shadow-sm">
         <div className="px-5 py-4">
           <div className="flex items-center gap-3">
             <button
-              className="h-11 w-11 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-700 dark:hover:to-slate-600 border border-slate-200/50 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
+              className="h-11 w-11 rounded-2xl bg-card dark:bg-card border border-border/50 dark:border-border shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
               onClick={() => router.back()}
             >
-              <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+              <ArrowLeft className="h-5 w-5 text-foreground" />
             </button>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary/80 via-accent/80 to-primary/80 bg-clip-text text-transparent">
               {isEditing ? "Modifier l'identifiant de pari" : t("addBetId")}
@@ -308,8 +308,8 @@ function AddBetIdContent() {
       </header>
 
       <main className="px-5 py-6 pb-8 safe-area-bottom">
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
-          <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
+        <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+          <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
               {isEditing ? "Modifier l'identifiant de pari" : "Ajouter un identifiant de pari"}
             </h2>
@@ -361,7 +361,7 @@ function AddBetIdContent() {
                     type="button"
                     onClick={handleSearch}
                     disabled={searchUserMutation.isPending || !appId || !platformId}
-                    className="h-10 px-4 bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 text-white hover:from-emerald-600 hover:to-emerald-700 dark:hover:from-emerald-700 dark:hover:to-emerald-800 shadow-lg shadow-emerald-500/30"
+                    className="h-10 px-4 bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40"
                   >
                     <Search className="h-4 w-4" />
                   </Button>
@@ -373,7 +373,7 @@ function AddBetIdContent() {
 
               <button
                 type="submit"
-                className="w-full h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 text-white hover:from-emerald-600 hover:to-emerald-700 dark:hover:from-emerald-700 dark:hover:to-emerald-800 active:scale-[0.98] transition-all duration-200 font-bold text-sm disabled:opacity-50 shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40"
+                className="w-full h-12 rounded-2xl bg-gradient-to-br from-primary to-accent text-white active:scale-[0.98] transition-all duration-200 font-bold text-sm disabled:opacity-50 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40"
                 disabled={searchUserMutation.isPending || loadingBetIdToEdit}
               >
                 {searchUserMutation.isPending ? t("loading") : "Rechercher"}
@@ -384,8 +384,8 @@ function AddBetIdContent() {
 
         {/* Saved Bet IDs Section */}
         {platformId && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 mt-5">
-            <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
+          <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 mt-5">
+            <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Identifiants sauvegardés</h2>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">
                 Vos identifiants de pari pour cette plateforme
@@ -406,14 +406,14 @@ function AddBetIdContent() {
                   {savedBetIds.map((betId) => (
                     <div
                       key={betId.id}
-                      className="p-4 rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+                    className="p-4 rounded-2xl border-2 border-border/50 dark:border-border bg-card dark:bg-card"
                     >
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-bold text-slate-900 dark:text-slate-100">{betId.user_app_id}</p>
                           <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">ID de pari</p>
                         </div>
-                        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full p-1.5">
+                        <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5">
                           <Check className="h-4 w-4 text-white" />
                         </div>
                       </div>
@@ -428,7 +428,7 @@ function AddBetIdContent() {
 
       {/* Error Modal */}
       <Dialog open={showErrorModal} onOpenChange={setShowErrorModal}>
-        <DialogContent className="bg-white dark:bg-slate-900">
+        <DialogContent className="bg-card dark:bg-card">
           <DialogHeader>
             <DialogTitle className="text-red-600 dark:text-red-400">Erreur</DialogTitle>
             <DialogDescription>{errorMessage}</DialogDescription>
@@ -447,7 +447,7 @@ function AddBetIdContent() {
 
       {/* Confirmation Modal */}
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-        <DialogContent className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/30 dark:to-emerald-900/30 border-emerald-200 dark:border-emerald-700">
+        <DialogContent className="bg-card dark:bg-card border border-border/50">
           <DialogHeader>
             <DialogTitle className="text-emerald-700 dark:text-emerald-300">
               {isEditing ? "Confirmer la modification" : "Confirmer l'ajout"}
@@ -481,7 +481,7 @@ function AddBetIdContent() {
                 handleConfirmAdd(appId, platformId)
               }}
               disabled={addBetIdMutation.isPending || updateBetIdMutation.isPending}
-              className="flex-1 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
+              className="flex-1 bg-gradient-to-br from-primary to-accent text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40"
             >
               {(addBetIdMutation.isPending || updateBetIdMutation.isPending) ? t("loading") : "Confirmer"}
             </Button>

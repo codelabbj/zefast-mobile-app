@@ -173,7 +173,7 @@ function DashboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-background dark:bg-background">
       {/* Mobile Header */}
       <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-50 safe-area-top shadow-sm">
         <div className="px-5 py-4">
@@ -356,7 +356,7 @@ function DashboardContent() {
 
         {/* Recent Transactions */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
-          <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
+          <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t("recentTransactions")}</h2>
@@ -381,7 +381,7 @@ function DashboardContent() {
               </div>
             ) : !transactions || transactions.length === 0 ? (
               <div className="text-center py-16 text-slate-500">
-                <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center shadow-inner">
+                <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-card dark:bg-card flex items-center justify-center shadow-inner">
                   <ArrowDownCircle className="h-8 w-8 text-slate-400 dark:text-slate-500" />
                 </div>
                 <p className="text-sm font-semibold">{t("noData")}</p>

@@ -179,16 +179,16 @@ function AddPhoneContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-background dark:bg-background">
       {/* Header */}
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-50 safe-area-top shadow-sm">
+      <header className="bg-card/80 dark:bg-card/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50 safe-area-top shadow-sm">
         <div className="px-5 py-4">
           <div className="flex items-center gap-3">
             <button
-              className="h-11 w-11 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-700 dark:hover:to-slate-600 border border-slate-200/50 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
+              className="h-11 w-11 rounded-2xl bg-card dark:bg-card border border-border/50 dark:border-border shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
               onClick={() => router.back()}
             >
-              <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+              <ArrowLeft className="h-5 w-5 text-foreground" />
             </button>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary/80 via-accent/80 to-primary/80 bg-clip-text text-transparent">
               {isEditing ? "Modifier le numéro de téléphone" : t("addPhone")}
@@ -198,8 +198,8 @@ function AddPhoneContent() {
       </header>
 
       <main className="px-5 py-6 pb-8 safe-area-bottom">
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
-          <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
+        <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+          <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
               {isEditing ? "Modifier le numéro de téléphone" : "Ajouter un numéro de téléphone"}
             </h2>

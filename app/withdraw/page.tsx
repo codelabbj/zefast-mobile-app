@@ -384,16 +384,16 @@ function WithdrawContent() {
   }, [searchParams, step, selectedPlatform])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+    <div className="min-h-screen bg-background dark:bg-background">
       {/* Mobile Header */}
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-50 safe-area-top shadow-sm">
+      <header className="bg-card/80 dark:bg-card/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50 safe-area-top shadow-sm">
         <div className="px-5 py-4">
           <div className="flex items-center gap-3 mb-3">
             <button
-              className="h-11 w-11 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-700 dark:hover:to-slate-600 border border-slate-200/50 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
+              className="h-11 w-11 rounded-2xl bg-card dark:bg-card border border-border/50 dark:border-border shadow-sm hover:shadow-md transition-all duration-200 active:scale-95 flex items-center justify-center"
               onClick={() => (step > 1 ? setStep(step - 1) : router.back())}
             >
-              <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
+              <ArrowLeft className="h-5 w-5 text-foreground" />
             </button>
             <div className="flex-1">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-primary/80 via-accent/80 to-primary/80 bg-clip-text text-transparent">{t("withdraw")}</h1>
@@ -411,8 +411,8 @@ function WithdrawContent() {
       <main className="px-5 py-6 space-y-5 pb-8 safe-area-bottom">
         {/* Step 1: Select Platform */}
         {step === 1 && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
-            <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
+          <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+            <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t("selectPlatform")}</h2>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Choisissez votre plateforme de paris</p>
             </div>
@@ -428,7 +428,7 @@ function WithdrawContent() {
                       className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
                         selectedPlatform?.id === platform.id
                           ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                          : "border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 bg-white dark:bg-slate-800"
+                          : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                       }`}
                     >
                       {selectedPlatform?.id === platform.id && (
@@ -455,8 +455,8 @@ function WithdrawContent() {
 
         {/* Step 2: Select Bet ID */}
         {step === 2 && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
-            <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
+          <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+            <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t("selectBetId")}</h2>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Choisissez votre identifiant de pari</p>
             </div>
@@ -472,7 +472,7 @@ function WithdrawContent() {
                         className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${
                           selectedBetId?.id === betId.id
                             ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                            : "border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 bg-white dark:bg-slate-800"
+                            : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -518,7 +518,7 @@ function WithdrawContent() {
                   </div>
 
                   <button
-                    className="w-full h-12 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-700 dark:hover:to-slate-600 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2"
+                    className="w-full h-12 rounded-2xl bg-card dark:bg-card border border-border/50 dark:border-border shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-foreground flex items-center justify-center gap-2"
                     onClick={() => router.push(`/add-bet-id?platform=${selectedPlatform?.id}`)}
                   >
                     <Plus className="h-5 w-5" />
@@ -532,8 +532,8 @@ function WithdrawContent() {
 
         {/* Step 3: Select Network */}
         {step === 3 && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
-            <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
+        <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+            <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t("selectNetwork")}</h2>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Choisissez votre réseau de paiement</p>
             </div>
@@ -549,7 +549,7 @@ function WithdrawContent() {
                       className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
                         selectedNetwork?.id === network.id
                           ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                          : "border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 bg-white dark:bg-slate-800"
+                          : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                       }`}
                     >
                       {selectedNetwork?.id === network.id && (
@@ -573,8 +573,8 @@ function WithdrawContent() {
 
         {/* Step 4: Select Phone */}
         {step === 4 && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
-            <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
+          <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+            <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t("selectPhone")}</h2>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Choisissez votre numéro de téléphone</p>
             </div>
@@ -591,7 +591,7 @@ function WithdrawContent() {
                           className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${
                             selectedPhone?.id === phone.id
                               ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                              : "border-slate-200 dark:border-slate-700 hover:border-primary/50 dark:hover:border-primary/50 bg-white dark:bg-slate-800"
+                              : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                           }`}
                         >
                           <div className="flex items-center justify-between">
@@ -643,7 +643,7 @@ function WithdrawContent() {
                   )}
 
                   <button
-                    className="w-full h-12 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-700 dark:hover:to-slate-600 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-slate-700 dark:text-slate-300 flex items-center justify-center gap-2"
+                    className="w-full h-12 rounded-2xl bg-card dark:bg-card border border-border/50 dark:border-border shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-foreground flex items-center justify-center gap-2"
                     onClick={() => router.push(`/add-phone?network=${selectedNetwork?.id}&from=withdraw`)}
                   >
                     <Plus className="h-5 w-5" />
@@ -657,8 +657,8 @@ function WithdrawContent() {
 
         {/* Step 5: Enter Amount and Withdrawal Code */}
         {step === 5 && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
-            <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
+        <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+            <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t("enterAmount")}</h2>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">
                 Montant: {selectedPlatform?.minimun_with} - {selectedPlatform?.max_win} FCFA
@@ -703,7 +703,7 @@ function WithdrawContent() {
               </div>
 
               {/* Summary */}
-              <div className="p-5 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl space-y-3 text-sm border border-slate-200 dark:border-slate-600 shadow-inner">
+              <div className="p-5 bg-card dark:bg-card rounded-2xl space-y-3 text-sm border border-border/50 dark:border-border shadow-inner">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">{t("platform")}</span>
                   <span className="font-medium">{selectedPlatform?.name}</span>
@@ -755,7 +755,7 @@ function WithdrawContent() {
 
         {/* Tutorial Button for Withdrawal */}
         {step === 5 && selectedPlatform?.withdrawal_tuto_link && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+        <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
             <div className="p-5">
               <button
                 onClick={() => window.open(selectedPlatform.withdrawal_tuto_link, '_blank', 'noopener,noreferrer')}
@@ -778,7 +778,7 @@ function WithdrawContent() {
                 isNavigatingBackRef.current = true
                 setStep(step - 1)
               }}
-              className="flex-1 h-12 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 hover:from-slate-200 hover:to-slate-300 dark:hover:from-slate-700 dark:hover:to-slate-600 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-slate-700 dark:text-slate-300"
+              className="flex-1 h-12 rounded-2xl bg-card dark:bg-card border border-border/50 dark:border-border shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-foreground"
             >
               {t("previous")}
             </button>
@@ -850,7 +850,7 @@ function WithdrawContent() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="bg-white dark:bg-slate-900">
+        <DialogContent className="bg-card dark:bg-card">
           <DialogHeader>
             <DialogTitle className="text-red-600 dark:text-red-400">Confirmer la suppression</DialogTitle>
             <DialogDescription>
@@ -897,7 +897,7 @@ function WithdrawContent() {
 
       {/* USSD Code Modal */}
       <Dialog open={showUssdModal} onOpenChange={setShowUssdModal}>
-        <DialogContent className="bg-white dark:bg-slate-900">
+        <DialogContent className="bg-card dark:bg-card">
           <DialogHeader>
             <DialogTitle className="text-blue-600 dark:text-blue-400">Code USSD</DialogTitle>
             <DialogDescription>
