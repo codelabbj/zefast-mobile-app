@@ -55,22 +55,22 @@ export function AdvertisementCarousel({ advertisements, isLoading }: Advertiseme
 
   if (isLoading) {
     return (
-      <div className="relative w-full h-48 flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-accent to-primary">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-[3px] border-solid border-white border-r-transparent"></div>
+      <div className="relative w-full h-48 flex items-center justify-center overflow-hidden bg-slate-100 dark:bg-slate-900/60">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-[3px] border-solid border-primary border-r-transparent"></div>
       </div>
     )
   }
 
   if (!advertisements || advertisements.length === 0) {
     return (
-      <div className="relative w-full h-48 flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-accent to-primary">
-        <p className="text-white font-bold text-lg">Advertisement</p>
+      <div className="relative w-full h-48 flex items-center justify-center overflow-hidden bg-slate-100 dark:bg-slate-900/60">
+        <p className="text-slate-500 dark:text-slate-300 font-semibold text-lg">Pas de publicité pour le moment</p>
       </div>
     )
   }
 
   return (
-    <div className="relative w-full h-48 overflow-hidden bg-gradient-to-br from-primary via-accent to-primary">
+    <div className="relative w-full h-48 overflow-hidden">
       {/* Slides */}
       <div
         className="relative w-full h-full flex transition-transform duration-500 ease-in-out"

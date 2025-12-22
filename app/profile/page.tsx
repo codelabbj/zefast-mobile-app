@@ -170,7 +170,7 @@ function ProfileContent() {
             >
               <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             </button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary/80 via-accent/80 to-primary/80 bg-clip-text text-transparent">
               Mon Profil
             </h1>
           </div>
@@ -312,8 +312,8 @@ function ProfileContent() {
         <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
           <div className="px-5 py-4 bg-gradient-to-r from-slate-50 to-slate-100/50 dark:from-slate-900 dark:to-slate-800/50 border-b border-slate-200/50 dark:border-slate-800/50">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-200 dark:from-amber-900/40 dark:to-orange-800/40 flex items-center justify-center">
-                <Lock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 dark:from-primary/40 dark:to-accent/40 flex items-center justify-center">
+                <Lock className="h-6 w-6 text-primary dark:text-accent" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Changer le mot de passe</h2>
@@ -402,7 +402,7 @@ function ProfileContent() {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-br from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white"
+                className="w-full bg-gradient-to-br from-primary to-accent hover:from-accent hover:to-primary text-white"
                 disabled={changePasswordMutation.isPending}
               >
                 {changePasswordMutation.isPending ? (

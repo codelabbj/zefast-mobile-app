@@ -132,6 +132,11 @@ function DashboardContent() {
 
   const referralBonusEnabled = settings?.referral_bonus === true
 
+  const hasAdvertisements = !!advertisements && advertisements.length > 0
+  const advertisementSectionClassName = hasAdvertisements
+    ? "relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 dark:from-primary/20 dark:via-accent/20 dark:to-primary/10 border border-primary/20 dark:border-primary/30 shadow-lg shadow-primary/10 dark:shadow-primary/20"
+    : "relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50"
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "accept":
@@ -148,7 +153,7 @@ function DashboardContent() {
         )
       default:
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-amber-100 to-amber-50 dark:from-amber-900/40 dark:to-amber-800/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-700 shadow-sm">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-primary/20 to-accent/10 dark:from-primary/40 dark:to-accent/20 text-primary dark:text-accent border border-primary/30 dark:border-primary/50 shadow-sm">
             {t("pending")}
           </span>
         )
@@ -262,7 +267,7 @@ function DashboardContent() {
       <main className="px-5 py-6 space-y-5 pb-8 safe-area-bottom">
         {/* Bonus Card */}
         {user && user.bonus_available > 0 && (
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 text-white shadow-2xl shadow-amber-500/30">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/70 via-accent/70 to-primary/80 text-white shadow-2xl shadow-primary/30">
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
             <div className="absolute -top-32 -right-32 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
             <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
@@ -322,7 +327,7 @@ function DashboardContent() {
         </div>
 
         {/* Advertisement Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-accent/10 to-primary/5 dark:from-primary/20 dark:via-accent/20 dark:to-primary/10 border border-primary/20 dark:border-primary/30 shadow-lg shadow-primary/10 dark:shadow-primary/20">
+        <div className={advertisementSectionClassName}>
           <AdvertisementCarousel
             advertisements={advertisements || []}
             isLoading={loadingAd}
@@ -332,7 +337,7 @@ function DashboardContent() {
         {/* Bonus Button */}
         {referralBonusEnabled && (
           <button
-            className="w-full group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 dark:from-amber-600 dark:to-orange-700 text-white shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 active:scale-[0.97] transition-all duration-300 touch-manipulation"
+            className="w-full group relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-accent dark:from-primary/80 dark:to-accent/80 text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 active:scale-[0.97] transition-all duration-300 touch-manipulation"
             onClick={() => router.push("/bonus")}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

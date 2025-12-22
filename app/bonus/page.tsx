@@ -127,14 +127,14 @@ function BonusContent() {
             >
               <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             </button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">{t("bonus")}</h1>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary/80 via-accent/80 to-primary/80 bg-clip-text text-transparent">{t("bonus")}</h1>
           </div>
         </div>
       </header>
 
       <main className="px-5 py-6 space-y-5 pb-8 safe-area-bottom">
         {/* Current Bonus Card */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 text-white shadow-2xl shadow-amber-500/30">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/70 via-accent/70 to-primary/80 text-white shadow-2xl shadow-primary/30">
           <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
           <div className="absolute -top-32 -right-32 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
@@ -272,7 +272,7 @@ function BonusContent() {
                   useBonusMutation.mutate()
                 }}
                 disabled={useBonusMutation.isPending || !selectedPlatform || !selectedBetId || !bonusAmount}
-                className="w-full bg-gradient-to-br from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white"
+                className="w-full bg-gradient-to-br from-primary to-accent hover:from-accent hover:to-primary text-white"
               >
                 {useBonusMutation.isPending ? t("loading") : "Utiliser le bonus"}
               </Button>
@@ -310,8 +310,8 @@ function BonusContent() {
                   <div key={bonus.id} className="px-5 py-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                     <div className="flex items-center justify-between gap-4">
                       <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/40 dark:to-amber-800/40 shadow-lg shadow-amber-500/20 border border-amber-200/50 dark:border-amber-700/30 flex items-center justify-center flex-shrink-0">
-                          <Gift className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 dark:from-primary/40 dark:to-accent/40 shadow-lg shadow-primary/20 border border-primary/30 dark:border-primary/50 flex items-center justify-center flex-shrink-0">
+                          <Gift className="h-6 w-6 text-primary dark:text-accent" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-[15px] text-slate-900 dark:text-slate-100 truncate mb-1">{bonus.reason_bonus}</p>
@@ -319,7 +319,7 @@ function BonusContent() {
                         </div>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <p className="font-black text-[15px] text-amber-600 dark:text-amber-400">+{bonus.amount} FCFA</p>
+                        <p className="font-black text-[15px] text-primary dark:text-accent">+{bonus.amount} FCFA</p>
                       </div>
                     </div>
                   </div>

@@ -396,7 +396,7 @@ function WithdrawContent() {
               <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             </button>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">{t("withdraw")}</h1>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary/80 via-accent/80 to-primary/80 bg-clip-text text-transparent">{t("withdraw")}</h1>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Étape {step} sur 5</p>
             </div>
           </div>

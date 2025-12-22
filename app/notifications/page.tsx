@@ -54,7 +54,7 @@ function NotificationsContent() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">{t("notifications")}</h1>
+            <h1 className="text-xl font-bold bg-gradient-to-r from-primary/80 via-accent/80 to-primary/80 bg-clip-text text-transparent">{t("notifications")}</h1>
             {unreadCount > 0 && <p className="text-sm text-muted-foreground">{unreadCount} non lues</p>}
           </div>
         </div>

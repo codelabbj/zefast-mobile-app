@@ -190,7 +190,7 @@ function AddPhoneContent() {
             >
               <ArrowLeft className="h-5 w-5 text-slate-700 dark:text-slate-300" />
             </button>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary/80 via-accent/80 to-primary/80 bg-clip-text text-transparent">
               {isEditing ? "Modifier le numéro de téléphone" : t("addPhone")}
             </h1>
           </div>
