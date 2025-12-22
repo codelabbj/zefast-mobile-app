@@ -677,11 +677,11 @@ function WithdrawContent() {
                 />
               </div>
               {isMoovNetwork && (
-                <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/70 p-4 text-xs text-slate-600 space-y-1">
-                  <p className="font-semibold text-emerald-600">
+                <div className="rounded-2xl border border-border/50 bg-card p-4 text-xs text-muted-foreground space-y-1">
+                  <p className="font-semibold text-primary/90">
                     Le code USSD Moov ne pré-remplit plus le montant.
                   </p>
-                  <p className="text-emerald-700">
+                  <p className="text-primary/80">
                     Vous devrez saisir manuellement {formattedWithdrawAmount} une fois que vous aurez composé le code.
                   </p>
                 </div>

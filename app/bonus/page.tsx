@@ -134,7 +134,8 @@ function BonusContent() {
 
       <main className="px-5 py-6 space-y-5 pb-8 safe-area-bottom">
         {/* Current Bonus Card */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/70 via-accent/70 to-primary/80 text-white shadow-2xl shadow-primary/30">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/70 via-accent/60 to-primary/80 text-white shadow-2xl shadow-primary/30">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/70 via-accent/60 to-primary/80 text-white shadow-2xl shadow-primary/30">
           <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
           <div className="absolute -top-32 -right-32 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-20 -left-20 w-48 h-48 bg-white/5 rounded-full blur-2xl"></div>
@@ -163,8 +164,8 @@ function BonusContent() {
                 <p className="text-xs text-slate-600 dark:text-slate-400 mb-2 font-semibold uppercase tracking-wide">Total gagné</p>
                 <p className="text-3xl font-black text-slate-900 dark:text-slate-100">{totalBonus.toLocaleString()} FCFA</p>
               </div>
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/40 dark:to-emerald-800/40 shadow-lg shadow-emerald-500/20 border border-emerald-200/50 dark:border-emerald-700/30 flex items-center justify-center">
-                <TrendingUp className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 dark:from-primary/30 dark:to-accent/30 shadow-lg shadow-primary/20 border border-border/50 dark:border-border/50 flex items-center justify-center">
+                <TrendingUp className="h-8 w-8 text-primary dark:text-accent" />
               </div>
             </div>
           </div>

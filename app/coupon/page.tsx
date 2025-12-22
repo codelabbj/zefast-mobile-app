@@ -134,7 +134,7 @@ function CouponContent() {
                               title="Copier le code"
                             >
                               {copiedCode === coupon.code ? (
-                                <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                <Check className="h-4 w-4 text-primary dark:text-accent" />
                               ) : (
                                 <Copy className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                               )}

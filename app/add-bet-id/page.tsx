@@ -449,7 +449,7 @@ function AddBetIdContent() {
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
         <DialogContent className="bg-card dark:bg-card border border-border/50">
           <DialogHeader>
-            <DialogTitle className="text-emerald-700 dark:text-emerald-300">
+            <DialogTitle className="text-primary dark:text-accent">
               {isEditing ? "Confirmer la modification" : "Confirmer l'ajout"}
             </DialogTitle>
             <DialogDescription className="text-slate-700 dark:text-slate-300">

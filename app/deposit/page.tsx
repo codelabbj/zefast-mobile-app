@@ -396,12 +396,12 @@ function DepositContent() {
           </div>
           
           {/* Progress Bar */}
-          <div className="h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
-            <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-emerald-600 transition-all duration-300 rounded-full shadow-lg shadow-emerald-500/30"
-              style={{ width: `${(step / 5) * 100}%` }}
-            />
-          </div>
+            <div className="h-2 bg-card border border-border/50 rounded-full overflow-hidden shadow-inner">
+              <div
+                className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300 rounded-full shadow-lg shadow-primary/30"
+                style={{ width: `${(step / 5) * 100}%` }}
+              />
+            </div>
         </div>
       </header>
 
@@ -427,12 +427,12 @@ function DepositContent() {
                       onClick={() => setSelectedPlatform(platform)}
                       className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
                         selectedPlatform?.id === platform.id
-                          ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/30 dark:to-emerald-900/30 shadow-lg shadow-emerald-500/20"
-                          : "border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 bg-white dark:bg-slate-800"
+                          ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                          : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                       }`}
                     >
                       {selectedPlatform?.id === platform.id && (
-                        <div className="absolute top-2 right-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full p-1.5 shadow-lg shadow-emerald-500/30">
+                        <div className="absolute top-2 right-2 bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                           <Check className="h-3.5 w-3.5 text-white" />
                         </div>
                       )}
@@ -471,8 +471,8 @@ function DepositContent() {
                         key={betId.id}
                         className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${
                           selectedBetId?.id === betId.id
-                            ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/30 dark:to-emerald-900/30 shadow-lg shadow-emerald-500/20"
-                            : "border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 bg-white dark:bg-slate-800"
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                            : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -485,8 +485,8 @@ function DepositContent() {
                           </div>
                           <div className="flex items-center gap-2 ml-3">
                           {selectedBetId?.id === betId.id && (
-                            <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full p-1.5 shadow-lg shadow-emerald-500/30">
-                                <Check className="h-3 w-3 text-white" />
+                            <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                              <Check className="h-3 w-3 text-white" />
                             </div>
                           )}
                             <button
@@ -546,14 +546,14 @@ function DepositContent() {
                     <div
                       key={network.id}
                       onClick={() => setSelectedNetwork(network)}
-                      className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
-                        selectedNetwork?.id === network.id
-                          ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/30 dark:to-emerald-900/30 shadow-lg shadow-emerald-500/20"
-                          : "border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 bg-white dark:bg-slate-800"
-                      }`}
+                    className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
+                      selectedNetwork?.id === network.id
+                        ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                        : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
+                    }`}
                     >
                       {selectedNetwork?.id === network.id && (
-                        <div className="absolute top-2 right-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full p-1.5 shadow-lg shadow-emerald-500/30">
+                        <div className="absolute top-2 right-2 bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                           <Check className="h-3.5 w-3.5 text-white" />
                         </div>
                       )}
@@ -590,8 +590,8 @@ function DepositContent() {
                           key={phone.id}
                           className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${
                             selectedPhone?.id === phone.id
-                              ? "border-emerald-500 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-950/30 dark:to-emerald-900/30 shadow-lg shadow-emerald-500/20"
-                              : "border-slate-200 dark:border-slate-700 hover:border-emerald-300 dark:hover:border-emerald-700 bg-white dark:bg-slate-800"
+                              ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                              : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                           }`}
                         >
                           <div className="flex items-center justify-between">
@@ -604,8 +604,8 @@ function DepositContent() {
                             </div>
                             <div className="flex items-center gap-2 ml-3">
                             {selectedPhone?.id === phone.id && (
-                              <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full p-1.5 shadow-lg shadow-emerald-500/30">
-                                  <Check className="h-3 w-3 text-white" />
+                              <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                                <Check className="h-3 w-3 text-white" />
                               </div>
                             )}
                               <button
@@ -677,14 +677,14 @@ function DepositContent() {
                 />
               </div>
               {isMoovNetwork && (
-                <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/70 p-4 text-sm text-slate-700 space-y-1">
-                  <p className="text-xs font-semibold text-emerald-600">
+                <div className="rounded-2xl border border-border/50 bg-card p-4 text-sm text-muted-foreground space-y-1">
+                  <p className="text-xs font-semibold text-primary/80">
                     Montant Moov calculé :
-                    <span className="ml-1 text-emerald-600">
+                    <span className="ml-1 text-primary/90">
                       {moovAdjustedAmount !== null ? `${moovAdjustedAmount.toLocaleString("fr-FR")} FCFA` : "—"}
                     </span>
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-muted-foreground">
                     Lors de la suite via le code USSD, vous devrez saisir ce montant manuellement.
                   </p>
                 </div>
@@ -747,7 +747,7 @@ function DepositContent() {
               <div className="p-5">
                 <button
                   onClick={() => window.open(selectedPlatform.deposit_tuto_link, '_blank', 'noopener,noreferrer')}
-                  className="w-full h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 active:scale-[0.98] transition-all duration-200 font-semibold text-sm shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 flex items-center justify-center gap-2"
+                  className="w-full h-12 rounded-2xl bg-gradient-to-br from-primary to-accent text-white hover:from-accent/80 hover:to-primary/80 active:scale-[0.98] transition-all duration-200 font-semibold text-sm shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 flex items-center justify-center gap-2"
                 >
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -773,7 +773,7 @@ function DepositContent() {
           )}
           <button
             onClick={handleNext}
-            className="flex-1 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 text-white hover:from-emerald-600 hover:to-emerald-700 dark:hover:from-emerald-700 dark:hover:to-emerald-800 active:scale-[0.98] transition-all duration-200 font-bold text-sm shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40"
+            className="flex-1 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent text-white hover:from-accent/80 hover:to-primary/80 active:scale-[0.98] transition-all duration-200 font-bold text-sm shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40"
           >
             {step === 5 ? t("confirm") : t("next")}
           </button>
@@ -816,9 +816,9 @@ function DepositContent() {
                 <span className="font-medium">{selectedPlatform.street}</span>
               </div>
             )}
-            <div className="flex justify-between text-lg font-bold pt-2 border-t">
+            <div className="flex justify-between text-lg font-bold pt-2 border-t border-border/50 dark:border-border">
               <span>{t("amount")}</span>
-              <span className="text-emerald-500">{amount} FCFA</span>
+              <span className="text-primary">{amount} FCFA</span>
             </div>
           </div>
           <div className="flex gap-4">

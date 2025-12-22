@@ -71,7 +71,7 @@ function TransactionsContent() {
     const statusLabel = getTransactionStatusLabel(status as any)
     switch (status) {
       case "accept":
-        return <Badge className="bg-emerald-500">{statusLabel}</Badge>
+      return <Badge className="bg-primary/80 text-white">{statusLabel}</Badge>
       case "error":
         return <Badge variant="destructive">{statusLabel}</Badge>
       case "init_payment":
@@ -83,7 +83,7 @@ function TransactionsContent() {
 
   const getTypeIcon = (type: string) => {
     return type === "deposit" ? (
-      <ArrowDownCircle className="h-5 w-5 text-emerald-500" />
+      <ArrowDownCircle className="h-5 w-5 text-primary" />
     ) : (
       <ArrowUpCircle className="h-5 w-5 text-indigo-500" />
     )

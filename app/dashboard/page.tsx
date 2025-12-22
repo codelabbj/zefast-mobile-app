@@ -141,7 +141,7 @@ function DashboardContent() {
     switch (status) {
       case "accept":
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-emerald-100 to-emerald-50 dark:from-emerald-900/40 dark:to-emerald-800/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700 shadow-sm">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-primary/20 to-accent/10 dark:from-primary/30 dark:to-accent/20 text-primary dark:text-accent border border-primary/30 dark:border-primary/50 shadow-sm">
             {t("accept")}
           </span>
         )
@@ -162,8 +162,8 @@ function DashboardContent() {
 
   const getTypeIcon = (type: string) => {
     return type === "deposit" ? (
-      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/40 dark:to-emerald-800/40 shadow-lg shadow-emerald-500/20 border border-emerald-200/50 dark:border-emerald-700/30">
-        <ArrowDownCircle className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+      <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 dark:from-primary/30 dark:to-accent/30 shadow-lg shadow-primary/20 border border-border/50 dark:border-border/50">
+        <ArrowDownCircle className="h-6 w-6 text-primary dark:text-accent" />
       </div>
     ) : (
       <div className="flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 dark:from-primary/30 dark:to-primary/20 shadow-lg shadow-primary/20 border border-primary/30 dark:border-primary/40">
@@ -292,14 +292,14 @@ function DashboardContent() {
         {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-3">
           <button
-            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 text-white shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 active:scale-[0.97] transition-all duration-300 touch-manipulation"
+            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-accent dark:from-primary/80 dark:to-accent/80 text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 active:scale-[0.97] transition-all duration-300 touch-manipulation"
             onClick={() => router.push("/deposit")}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="absolute -top-8 -right-8 w-20 h-20 bg-white/20 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative p-4 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-lg">
-                <Plus className="h-6 w-6" />
+                <div className="w-12 h-12 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-lg">
+                  <Plus className="h-6 w-6 text-primary dark:text-white" />
               </div>
               <div className="text-left flex-1 min-w-0">
                 <p className="text-base font-bold">{t("deposit")}</p>
@@ -315,8 +315,8 @@ function DashboardContent() {
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div className="absolute -top-8 -right-8 w-20 h-20 bg-white/20 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative p-4 flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-lg">
-                <Minus className="h-6 w-6" />
+                <div className="w-12 h-12 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-lg">
+                  <Minus className="h-6 w-6 text-primary dark:text-white" />
               </div>
               <div className="text-left flex-1 min-w-0">
                 <p className="text-base font-bold">{t("withdraw")}</p>
@@ -344,7 +344,7 @@ function DashboardContent() {
             <div className="absolute -top-8 -right-8 w-20 h-20 bg-white/20 rounded-full blur-xl group-hover:scale-150 transition-transform duration-500"></div>
             <div className="relative p-4 flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-white/25 backdrop-blur-sm flex items-center justify-center border border-white/30 shadow-lg">
-                <Gift className="h-6 w-6" />
+                <Gift className="h-6 w-6 text-primary dark:text-white" />
               </div>
               <div className="text-left flex-1 min-w-0">
                 <p className="text-base font-bold">Bonus</p>
@@ -404,7 +404,7 @@ function DashboardContent() {
                         </p>
                         <p className={`font-black text-[15px] shrink-0 ${
                           transaction.type_trans === "deposit"
-                            ? "text-emerald-600 dark:text-emerald-400"
+                            ? "text-primary dark:text-accent"
                             : "text-primary dark:text-primary"
                         }`}>
                           {transaction.type_trans === "deposit" ? "+" : "-"}{transaction.amount.toLocaleString()} FCFA

@@ -66,7 +66,7 @@ export function FloatingMessageButton({
             onClick={handleWhatsApp}
             className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 hover:shadow-2xl transition-all duration-200 active:scale-95 group"
           >
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-500/30 group-hover:shadow-emerald-500/50 transition-shadow">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/30 group-hover:shadow-primary/40 transition-shadow">
               <WhatsAppIcon className="h-6 w-6 text-white" />
             </div>
             <span className="font-semibold text-slate-900 dark:text-slate-100">WhatsApp</span>

@@ -287,7 +287,7 @@ function AddPhoneContent() {
 
               <button
                 type="submit"
-                className="w-full h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 text-white hover:from-emerald-600 hover:to-emerald-700 dark:hover:from-emerald-700 dark:hover:to-emerald-800 active:scale-[0.98] transition-all duration-200 font-bold text-sm disabled:opacity-50 shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40"
+                className="w-full h-12 rounded-2xl bg-gradient-to-br from-primary to-accent text-white active:scale-[0.98] transition-all duration-200 font-bold text-sm disabled:opacity-50 shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40"
                 disabled={addPhoneMutation.isPending || updatePhoneMutation.isPending || loadingPhoneToEdit}
               >
                 {(addPhoneMutation.isPending || updatePhoneMutation.isPending) ? t("loading") : (isEditing ? "Modifier" : "Ajouter")}
