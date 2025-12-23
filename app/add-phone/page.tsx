@@ -76,24 +76,19 @@ function AddPhoneContent() {
     if (phoneToEdit && isEditing) {
       setNetworkId(phoneToEdit.network.toString())
 
-      // Extract country code and local number from full phone
-      const fullPhone = phoneToEdit.phone
-      if (fullPhone.startsWith('+225')) {
-        setSelectedCountry('ci')
-        setPhone(fullPhone.substring(4)) // Remove +225
-      } else if (fullPhone.startsWith('+226')) {
-        setSelectedCountry('bf')
-        setPhone(fullPhone.substring(4)) // Remove +226
-      } else if (fullPhone.startsWith('+221')) {
-        setSelectedCountry('sn')
-        setPhone(fullPhone.substring(4)) // Remove +221
-      } else if (fullPhone.startsWith('+229')) {
-        setSelectedCountry('bj')
-        setPhone(fullPhone.substring(4)) // Remove +229
+      const rawPhone = phoneToEdit.phone || ""
+      const normalizedPhone = rawPhone.startsWith("+") ? rawPhone : `+${rawPhone}`
+      const matchedCountry = countries.find((country) =>
+        normalizedPhone.startsWith(country.dialCode),
+      )
+
+      if (matchedCountry) {
+        setSelectedCountry(matchedCountry.code)
+        const localNumber = normalizedPhone.substring(matchedCountry.dialCode.length)
+        setPhone(localNumber.replace(/\D/g, ""))
       } else {
-        // Default to Côte d'Ivoire if no country code found
-        setSelectedCountry('ci')
-        setPhone(fullPhone)
+        setSelectedCountry("ci")
+        setPhone(rawPhone)
       }
     }
   }, [phoneToEdit, isEditing])
