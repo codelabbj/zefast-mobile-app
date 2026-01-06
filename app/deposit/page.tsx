@@ -42,10 +42,6 @@ function DepositContent() {
   const selectedNetworkName = selectedNetwork?.name?.toLowerCase()
   const isMoovNetwork = selectedNetworkName === "moov"
   const parsedAmount = Number(amount)
-  const moovAdjustedAmount =
-    isMoovNetwork && Number.isFinite(parsedAmount) && parsedAmount > 0
-      ? Math.max(0, Math.floor(parsedAmount - parsedAmount * 0.01))
-      : null
 
   // Fetch platforms
   const { data: platforms, isLoading: loadingPlatforms } = useQuery({
@@ -676,19 +672,6 @@ function DepositContent() {
                   className="mobile-input text-lg"
                 />
               </div>
-              {isMoovNetwork && (
-                <div className="rounded-2xl border border-border/50 bg-card p-4 text-sm text-muted-foreground space-y-1">
-                  <p className="text-xs font-semibold text-primary/80">
-                    Montant Moov calculé :
-                    <span className="ml-1 text-primary/90">
-                      {moovAdjustedAmount !== null ? `${moovAdjustedAmount.toLocaleString("fr-FR")} FCFA` : "—"}
-                    </span>
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Lors de la suite via le code USSD, vous devrez saisir ce montant manuellement.
-                  </p>
-                </div>
-              )}
 
               {/* Summary */}
               <div className="p-5 bg-card dark:bg-card rounded-2xl space-y-3 text-sm border border-border/50 dark:border-border shadow-inner">
@@ -949,7 +932,7 @@ function DepositContent() {
             </div>
             {isMoovNetwork && (
               <p className="text-xs text-center text-muted-foreground">
-                Après avoir composé ce code USSD, saisissez {moovAdjustedAmount !== null ? `${moovAdjustedAmount.toLocaleString("fr-FR")} FCFA` : "le montant saisi"} dans le menu Moov.
+                Après avoir composé ce code USSD, saisissez {parsedAmount.toLocaleString("fr-FR")} FCFA dans le menu Moov.
               </p>
             )}
           </div>
