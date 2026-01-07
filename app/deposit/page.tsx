@@ -42,6 +42,10 @@ function DepositContent() {
   const selectedNetworkName = selectedNetwork?.name?.toLowerCase()
   const isMoovNetwork = selectedNetworkName === "moov"
   const parsedAmount = Number(amount)
+  const moovAdjustedAmount =
+    isMoovNetwork && Number.isFinite(parsedAmount) && parsedAmount > 0
+      ? Math.max(0, Math.floor(parsedAmount - parsedAmount * 0.01))
+      : null
 
   // Fetch platforms
   const { data: platforms, isLoading: loadingPlatforms } = useQuery({
@@ -236,7 +240,8 @@ function DepositContent() {
       merchantPhone = settings.bf_moov_marchand_phone || settings.moov_marchand_phone
     }
 
-    const ussdCode = `*155*2*1*${merchantPhone}#`
+    const adjustedAmount = moovAdjustedAmount || parsedAmount
+    const ussdCode = `*155*2*1*${merchantPhone}*${adjustedAmount}#`
 
     // Try to open phone dialer
     try {
@@ -932,7 +937,7 @@ function DepositContent() {
             </div>
             {isMoovNetwork && (
               <p className="text-xs text-center text-muted-foreground">
-                Après avoir composé ce code USSD, saisissez {parsedAmount.toLocaleString("fr-FR")} FCFA dans le menu Moov.
+                Le code USSD contient déjà le montant ajusté. Composez simplement le code ci-dessus.
               </p>
             )}
           </div>
