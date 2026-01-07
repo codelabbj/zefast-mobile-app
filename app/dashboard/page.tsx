@@ -289,6 +289,14 @@ function DashboardContent() {
           </div>
         )}
 
+        {/* Advertisement Section */}
+        <div className={advertisementSectionClassName}>
+          <AdvertisementCarousel
+            advertisements={advertisements || []}
+            isLoading={loadingAd}
+          />
+        </div>
+
         {/* Action Buttons */}
         <div className="grid grid-cols-2 gap-3">
           <button
@@ -324,14 +332,6 @@ function DashboardContent() {
               </div>
             </div>
           </button>
-        </div>
-
-        {/* Advertisement Section */}
-        <div className={advertisementSectionClassName}>
-          <AdvertisementCarousel
-            advertisements={advertisements || []}
-            isLoading={loadingAd}
-          />
         </div>
 
         {/* Bonus Button */}
