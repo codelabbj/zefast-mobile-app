@@ -445,6 +445,20 @@ function WithdrawContent() {
                       <p className="text-center text-xs text-slate-600 dark:text-slate-400 mt-1.5 font-medium">
                         {platform.minimun_with} - {platform.max_win} FCFA
                       </p>
+                      {(platform.city || platform.street) && (
+                        <div className="mt-2 text-center">
+                          {platform.city && (
+                            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                              Ville: {platform.city}
+                            </p>
+                          )}
+                          {platform.street && (
+                            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                              Rue: {platform.street}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
