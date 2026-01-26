@@ -32,6 +32,7 @@ export interface Platform {
   street?: string
   deposit_tuto_link?: string
   withdrawal_tuto_link?: string
+  why_withdrawal_fail?: string
 }
 
 export interface UserPhone {

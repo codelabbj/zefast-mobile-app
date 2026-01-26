@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ArrowLeft, Check, Plus, Edit2, Trash2 } from "lucide-react"
+import { ArrowLeft, Check, Plus, Edit2, Trash2, Youtube } from "lucide-react"
 import toast from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -34,7 +34,7 @@ function DepositContent() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showUssdModal, setShowUssdModal] = useState(false)
   const [ussdCode, setUssdCode] = useState("")
-  const [itemToDelete, setItemToDelete] = useState<{type: 'betId' | 'phone', id: number, name: string} | null>(null)
+  const [itemToDelete, setItemToDelete] = useState<{ type: 'betId' | 'phone', id: number, name: string } | null>(null)
   const [transactionLink, setTransactionLink] = useState<string | null>(null)
   const previousStepRef = useRef(1)
   const isNavigatingBackRef = useRef(false)
@@ -151,13 +151,13 @@ function DepositContent() {
         network: selectedNetwork!.id,
         source: "mobile",
       }
-      
+
       const response = await api.post("/mobcash/transaction-deposit", payload)
       return response.data
     },
     onSuccess: (data) => {
       toast.success("Dépôt créé avec succès! En attente de confirmation.")
-      
+
       // Handle network-specific payment flows
       if (selectedNetwork?.name?.toLowerCase() === 'moov') {
         handleMoovDeposit(data)
@@ -165,20 +165,20 @@ function DepositContent() {
         handleOrangeDeposit(data)
       } else {
         // Default behavior for other networks
-      if (data?.transaction_link) {
-        setTransactionLink(data.transaction_link)
-        setShowTransactionLinkDialog(true)
-      } else {
-        router.push("/dashboard")
+        if (data?.transaction_link) {
+          setTransactionLink(data.transaction_link)
+          setShowTransactionLinkDialog(true)
+        } else {
+          router.push("/dashboard")
         }
       }
     },
     onError: (error: any) => {
       // Check for rate limiting error with time message
-      const errorTimeMessage = 
+      const errorTimeMessage =
         error?.originalError?.response?.data?.error_time_message ||
         error?.response?.data?.error_time_message
-      
+
       if (errorTimeMessage && Array.isArray(errorTimeMessage) && errorTimeMessage.length > 0) {
         const timeMessage = errorTimeMessage[0]
         toast.error(`Trop de tentatives. Veuillez réessayer dans ${timeMessage}`)
@@ -304,7 +304,7 @@ function DepositContent() {
   useEffect(() => {
     const isMovingForward = step > previousStepRef.current
     const isMovingBackward = step < previousStepRef.current
-    
+
     if (isMovingBackward) {
       isNavigatingBackRef.current = true
       // Reset the flag after a short delay
@@ -314,7 +314,7 @@ function DepositContent() {
     } else if (isMovingForward) {
       isNavigatingBackRef.current = false
     }
-    
+
     previousStepRef.current = step
   }, [step])
 
@@ -395,14 +395,14 @@ function DepositContent() {
               <p className="text-xs text-muted-foreground mt-0.5 font-medium">Étape {step} sur 5</p>
             </div>
           </div>
-          
+
           {/* Progress Bar */}
-            <div className="h-2 bg-card border border-border/50 rounded-full overflow-hidden shadow-inner">
-              <div
-                className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300 rounded-full shadow-lg shadow-primary/30"
-                style={{ width: `${(step / 5) * 100}%` }}
-              />
-            </div>
+          <div className="h-2 bg-card border border-border/50 rounded-full overflow-hidden shadow-inner">
+            <div
+              className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300 rounded-full shadow-lg shadow-primary/30"
+              style={{ width: `${(step / 5) * 100}%` }}
+            />
+          </div>
         </div>
       </header>
 
@@ -414,23 +414,22 @@ function DepositContent() {
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t("selectPlatform")}</h2>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Choisissez votre plateforme de paris</p>
             </div>
-          <div className="p-5">
+            <div className="p-5">
               {loadingPlatforms ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-current border-r-transparent mb-2"></div>
                   <p className="text-sm">{t("loading")}</p>
                 </div>
               ) : (
-              <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   {platforms?.map((platform) => (
                     <div
                       key={platform.id}
                       onClick={() => setSelectedPlatform(platform)}
-                      className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
-                        selectedPlatform?.id === platform.id
-                          ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                          : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
-                      }`}
+                      className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${selectedPlatform?.id === platform.id
+                        ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                        : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
+                        }`}
                     >
                       {selectedPlatform?.id === platform.id && (
                         <div className="absolute top-2 right-2 bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
@@ -484,11 +483,10 @@ function DepositContent() {
                     {betIds?.map((betId) => (
                       <div
                         key={betId.id}
-                        className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${
-                          selectedBetId?.id === betId.id
-                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                            : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
-                        }`}
+                        className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${selectedBetId?.id === betId.id
+                          ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                          : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <div
@@ -499,11 +497,11 @@ function DepositContent() {
                             <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">ID de pari</p>
                           </div>
                           <div className="flex items-center gap-2 ml-3">
-                          {selectedBetId?.id === betId.id && (
-                            <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
-                              <Check className="h-3 w-3 text-white" />
-                            </div>
-                          )}
+                            {selectedBetId?.id === betId.id && (
+                              <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                                <Check className="h-3 w-3 text-white" />
+                              </div>
+                            )}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -517,7 +515,7 @@ function DepositContent() {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
-                                setItemToDelete({type: 'betId', id: betId.id, name: betId.user_app_id})
+                                setItemToDelete({ type: 'betId', id: betId.id, name: betId.user_app_id })
                                 setShowDeleteDialog(true)
                               }}
                               className="p-1.5 rounded-lg bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
@@ -561,11 +559,10 @@ function DepositContent() {
                     <div
                       key={network.id}
                       onClick={() => setSelectedNetwork(network)}
-                    className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
-                      selectedNetwork?.id === network.id
+                      className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${selectedNetwork?.id === network.id
                         ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
                         : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
-                    }`}
+                        }`}
                     >
                       {selectedNetwork?.id === network.id && (
                         <div className="absolute top-2 right-2 bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
@@ -603,11 +600,10 @@ function DepositContent() {
                       {phones.map((phone) => (
                         <div
                           key={phone.id}
-                          className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${
-                            selectedPhone?.id === phone.id
-                              ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                              : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
-                          }`}
+                          className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${selectedPhone?.id === phone.id
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                            : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
+                            }`}
                         >
                           <div className="flex items-center justify-between">
                             <div
@@ -618,11 +614,11 @@ function DepositContent() {
                               <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">Numéro de téléphone</p>
                             </div>
                             <div className="flex items-center gap-2 ml-3">
-                            {selectedPhone?.id === phone.id && (
-                              <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
-                                <Check className="h-3 w-3 text-white" />
-                              </div>
-                            )}
+                              {selectedPhone?.id === phone.id && (
+                                <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                                  <Check className="h-3 w-3 text-white" />
+                                </div>
+                              )}
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
@@ -636,7 +632,7 @@ function DepositContent() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  setItemToDelete({type: 'phone', id: phone.id, name: phone.phone})
+                                  setItemToDelete({ type: 'phone', id: phone.id, name: phone.phone })
                                   setShowDeleteDialog(true)
                                 }}
                                 className="p-1.5 rounded-lg bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
@@ -727,35 +723,33 @@ function DepositContent() {
           </div>
         )}
 
-          {/* Network Message */}
-          {step === 5 && selectedNetwork?.deposit_message && selectedNetwork.deposit_message.trim() && (
-            <div className="bg-blue-50 dark:bg-blue-950/30 rounded-3xl border border-blue-200/50 dark:border-blue-800/50 overflow-hidden shadow-xl shadow-blue-200/30 dark:shadow-blue-900/30">
-              <div className="p-5">
-                <div className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div className="text-sm text-blue-900 dark:text-blue-100 leading-relaxed">
-                    {selectedNetwork.deposit_message}
-                  </div>
+        {/* Network Message */}
+        {step === 5 && selectedNetwork?.deposit_message && selectedNetwork.deposit_message.trim() && (
+          <div className="bg-blue-50 dark:bg-blue-950/30 rounded-3xl border border-blue-200/50 dark:border-blue-800/50 overflow-hidden shadow-xl shadow-blue-200/30 dark:shadow-blue-900/30">
+            <div className="p-5">
+              <div className="flex items-start gap-3">
+                <svg className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div className="text-sm text-blue-900 dark:text-blue-100 leading-relaxed">
+                  {selectedNetwork.deposit_message}
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Tutorial Button for Deposit */}
-          {step === 5 && selectedPlatform?.deposit_tuto_link && (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
-              <div className="p-5">
-                <button
-                  onClick={() => window.open(selectedPlatform.deposit_tuto_link, '_blank', 'noopener,noreferrer')}
-                  className="w-full h-12 rounded-2xl bg-gradient-to-br from-primary to-accent text-white hover:from-accent/80 hover:to-primary/80 active:scale-[0.98] transition-all duration-200 font-semibold text-sm shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 flex items-center justify-center gap-2"
-                >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Comment déposer
-                </button>
+        {/* Tutorial Button for Deposit */}
+        {step === 5 && selectedPlatform?.deposit_tuto_link && selectedPlatform.deposit_tuto_link.trim() !== "" && (
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+            <div className="p-5">
+              <button
+                onClick={() => window.open(selectedPlatform.deposit_tuto_link, '_blank', 'noopener,noreferrer')}
+                className="w-full h-12 rounded-2xl bg-card dark:bg-card border border-border/50 dark:border-border shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-foreground flex items-center justify-center gap-2"
+              >
+                <Youtube className="h-5 w-5 text-red-600" />
+                Comment déposer
+              </button>
             </div>
           </div>
         )}
@@ -842,24 +836,24 @@ function DepositContent() {
             <DialogDescription>Cliquez sur continuer pour continuer la transaction</DialogDescription>
           </DialogHeader>
           <div className="flex gap-4 pt-4">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setShowTransactionLinkDialog(false)
                 router.push("/dashboard")
-              }} 
+              }}
               className="flex-1"
             >
               Annuler
             </Button>
-            <Button 
+            <Button
               onClick={() => {
                 if (transactionLink) {
                   window.open(transactionLink, '_blank', 'noopener,noreferrer')
                 }
                 setShowTransactionLinkDialog(false)
                 router.push("/dashboard")
-              }} 
+              }}
               className="flex-1"
             >
               Continuer

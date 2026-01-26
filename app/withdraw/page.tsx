@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ArrowLeft, Check, Plus, Edit2, Trash2 } from "lucide-react"
+import { ArrowLeft, Check, Plus, Edit2, Trash2, Youtube } from "lucide-react"
 import toast from "react-hot-toast"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -34,7 +34,7 @@ function WithdrawContent() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showUssdModal, setShowUssdModal] = useState(false)
   const [ussdCode, setUssdCode] = useState("")
-  const [itemToDelete, setItemToDelete] = useState<{type: 'betId' | 'phone', id: number, name: string} | null>(null)
+  const [itemToDelete, setItemToDelete] = useState<{ type: 'betId' | 'phone', id: number, name: string } | null>(null)
   const previousStepRef = useRef(1)
   const isNavigatingBackRef = useRef(false)
 
@@ -151,7 +151,7 @@ function WithdrawContent() {
         withdriwal_code: withdrawalCode,
         source: "mobile",
       }
-      
+
       const response = await api.post("/mobcash/transaction-withdrawal", payload)
       return response.data
     },
@@ -165,15 +165,15 @@ function WithdrawContent() {
         handleOrangeWithdrawal(data)
       } else {
         // Default behavior for other networks
-      router.push("/dashboard")
+        router.push("/dashboard")
       }
     },
     onError: (error: any) => {
       // Check for rate limiting error with time message
-      const errorTimeMessage = 
+      const errorTimeMessage =
         error?.originalError?.response?.data?.error_time_message ||
         error?.response?.data?.error_time_message
-      
+
       if (errorTimeMessage && Array.isArray(errorTimeMessage) && errorTimeMessage.length > 0) {
         const timeMessage = errorTimeMessage[0]
         toast.error(`Trop de tentatives. Veuillez réessayer dans ${timeMessage}`)
@@ -309,7 +309,7 @@ function WithdrawContent() {
   useEffect(() => {
     const isMovingForward = step > previousStepRef.current
     const isMovingBackward = step < previousStepRef.current
-    
+
     if (isMovingBackward) {
       isNavigatingBackRef.current = true
       // Reset the flag after a short delay
@@ -319,7 +319,7 @@ function WithdrawContent() {
     } else if (isMovingForward) {
       isNavigatingBackRef.current = false
     }
-    
+
     previousStepRef.current = step
   }, [step])
 
@@ -400,7 +400,7 @@ function WithdrawContent() {
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Étape {step} sur 5</p>
             </div>
           </div>
-          
+
           {/* Progress Bar */}
           <div className="h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
             <div className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300 rounded-full shadow-lg shadow-primary/30" style={{ width: `${(step / 5) * 100}%` }} />
@@ -425,11 +425,10 @@ function WithdrawContent() {
                     <div
                       key={platform.id}
                       onClick={() => setSelectedPlatform(platform)}
-                      className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
-                        selectedPlatform?.id === platform.id
-                          ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                          : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
-                      }`}
+                      className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${selectedPlatform?.id === platform.id
+                        ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                        : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
+                        }`}
                     >
                       {selectedPlatform?.id === platform.id && (
                         <div className="absolute top-2 right-2 bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
@@ -483,11 +482,10 @@ function WithdrawContent() {
                     {betIds?.map((betId) => (
                       <div
                         key={betId.id}
-                        className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${
-                          selectedBetId?.id === betId.id
-                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                            : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
-                        }`}
+                        className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${selectedBetId?.id === betId.id
+                          ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                          : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
+                          }`}
                       >
                         <div className="flex items-center justify-between">
                           <div
@@ -498,11 +496,11 @@ function WithdrawContent() {
                             <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">ID de pari</p>
                           </div>
                           <div className="flex items-center gap-2 ml-3">
-                          {selectedBetId?.id === betId.id && (
-                            <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                            {selectedBetId?.id === betId.id && (
+                              <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                                 <Check className="h-3 w-3 text-white" />
-                            </div>
-                          )}
+                              </div>
+                            )}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -516,7 +514,7 @@ function WithdrawContent() {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
-                                setItemToDelete({type: 'betId', id: betId.id, name: betId.user_app_id})
+                                setItemToDelete({ type: 'betId', id: betId.id, name: betId.user_app_id })
                                 setShowDeleteDialog(true)
                               }}
                               className="p-1.5 rounded-lg bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
@@ -546,7 +544,7 @@ function WithdrawContent() {
 
         {/* Step 3: Select Network */}
         {step === 3 && (
-        <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+          <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
             <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t("selectNetwork")}</h2>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">Choisissez votre réseau de paiement</p>
@@ -560,11 +558,10 @@ function WithdrawContent() {
                     <div
                       key={network.id}
                       onClick={() => setSelectedNetwork(network)}
-                      className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${
-                        selectedNetwork?.id === network.id
-                          ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                          : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
-                      }`}
+                      className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${selectedNetwork?.id === network.id
+                        ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                        : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
+                        }`}
                     >
                       {selectedNetwork?.id === network.id && (
                         <div className="absolute top-2 right-2 bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
@@ -602,11 +599,10 @@ function WithdrawContent() {
                       {phones.map((phone) => (
                         <div
                           key={phone.id}
-                          className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${
-                            selectedPhone?.id === phone.id
-                              ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
-                              : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
-                          }`}
+                          className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${selectedPhone?.id === phone.id
+                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                            : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
+                            }`}
                         >
                           <div className="flex items-center justify-between">
                             <div
@@ -617,11 +613,11 @@ function WithdrawContent() {
                               <p className="text-sm text-slate-600 dark:text-slate-400 font-medium mt-0.5">Numéro de téléphone</p>
                             </div>
                             <div className="flex items-center gap-2 ml-3">
-                            {selectedPhone?.id === phone.id && (
-                              <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                              {selectedPhone?.id === phone.id && (
+                                <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                                   <Check className="h-3 w-3 text-white" />
-                              </div>
-                            )}
+                                </div>
+                              )}
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
@@ -635,7 +631,7 @@ function WithdrawContent() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  setItemToDelete({type: 'phone', id: phone.id, name: phone.phone})
+                                  setItemToDelete({ type: 'phone', id: phone.id, name: phone.phone })
                                   setShowDeleteDialog(true)
                                 }}
                                 className="p-1.5 rounded-lg bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
@@ -671,7 +667,7 @@ function WithdrawContent() {
 
         {/* Step 5: Enter Amount and Withdrawal Code */}
         {step === 5 && (
-        <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+          <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
             <div className="px-5 py-4 bg-card dark:bg-card border-b border-border/50 dark:border-border/50">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{t("enterAmount")}</h2>
               <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5 font-medium">
@@ -767,19 +763,28 @@ function WithdrawContent() {
           </div>
         )}
 
-        {/* Tutorial Button for Withdrawal */}
-        {step === 5 && selectedPlatform?.withdrawal_tuto_link && (
-        <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
-            <div className="p-5">
-              <button
-                onClick={() => window.open(selectedPlatform.withdrawal_tuto_link, '_blank', 'noopener,noreferrer')}
-                className="w-full h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 text-white hover:from-blue-600 hover:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 active:scale-[0.98] transition-all duration-200 font-semibold text-sm shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 flex items-center justify-center gap-2"
-              >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Comment retirer
-              </button>
+        {/* Tutorial and Help Buttons for Withdrawal */}
+        {step === 5 && ((selectedPlatform?.withdrawal_tuto_link && selectedPlatform.withdrawal_tuto_link.trim() !== "") || (selectedPlatform?.why_withdrawal_fail && selectedPlatform.why_withdrawal_fail.trim() !== "")) && (
+          <div className="bg-card dark:bg-card rounded-3xl border border-border/50 dark:border-border overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50">
+            <div className="p-5 space-y-3">
+              {selectedPlatform?.withdrawal_tuto_link && selectedPlatform.withdrawal_tuto_link.trim() !== "" && (
+                <button
+                  onClick={() => window.open(selectedPlatform.withdrawal_tuto_link, '_blank', 'noopener,noreferrer')}
+                  className="w-full h-12 rounded-2xl bg-card dark:bg-card border border-border/50 dark:border-border shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-foreground flex items-center justify-center gap-2"
+                >
+                  <Youtube className="h-5 w-5 text-red-600" />
+                  Comment retirer
+                </button>
+              )}
+              {selectedPlatform?.why_withdrawal_fail && selectedPlatform.why_withdrawal_fail.trim() !== "" && (
+                <button
+                  onClick={() => window.open(selectedPlatform.why_withdrawal_fail, '_blank', 'noopener,noreferrer')}
+                  className="w-full h-12 rounded-2xl bg-card dark:bg-card border border-border/50 dark:border-border shadow-sm hover:shadow-md active:scale-[0.98] transition-all duration-200 font-semibold text-sm text-foreground flex items-center justify-center gap-2"
+                >
+                  <Youtube className="h-5 w-5 text-red-600" />
+                  Pourquoi mon retrait échoue ?
+                </button>
+              )}
             </div>
           </div>
         )}
