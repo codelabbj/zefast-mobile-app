@@ -48,9 +48,11 @@ function WithdrawContent() {
 
   // Fetch platforms
   const { data: platforms, isLoading: loadingPlatforms } = useQuery({
-    queryKey: ["platforms"],
+    queryKey: ["platforms", "withdrawal"],
     queryFn: async () => {
-      const response = await api.get<Platform[]>("/mobcash/plateform")
+      const response = await api.get<Platform[]>("/mobcash/plateform", {
+        params: { type: "withdrawal" }
+      })
       return response.data.filter((p) => p.enable)
     },
   })
@@ -70,9 +72,11 @@ function WithdrawContent() {
 
   // Fetch networks
   const { data: networks, isLoading: loadingNetworks } = useQuery({
-    queryKey: ["networks"],
+    queryKey: ["networks", "withdrawal"],
     queryFn: async () => {
-      const response = await api.get<Network[]>("/mobcash/network")
+      const response = await api.get<Network[]>("/mobcash/network", {
+        params: { type: "withdrawal" }
+      })
       return response.data.filter((n) => n.active_for_with)
     },
     enabled: step === 3,

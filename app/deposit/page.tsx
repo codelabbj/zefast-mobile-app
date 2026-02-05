@@ -49,9 +49,11 @@ function DepositContent() {
 
   // Fetch platforms
   const { data: platforms, isLoading: loadingPlatforms } = useQuery({
-    queryKey: ["platforms"],
+    queryKey: ["platforms", "deposit"],
     queryFn: async () => {
-      const response = await api.get<Platform[]>("/mobcash/plateform")
+      const response = await api.get<Platform[]>("/mobcash/plateform", {
+        params: { type: "deposit" }
+      })
       return response.data.filter((p) => p.enable)
     },
   })
@@ -71,9 +73,11 @@ function DepositContent() {
 
   // Fetch networks
   const { data: networks, isLoading: loadingNetworks } = useQuery({
-    queryKey: ["networks"],
+    queryKey: ["networks", "deposit"],
     queryFn: async () => {
-      const response = await api.get<Network[]>("/mobcash/network")
+      const response = await api.get<Network[]>("/mobcash/network", {
+        params: { type: "deposit" }
+      })
       return response.data.filter((n) => n.active_for_deposit)
     },
     enabled: step === 3,
