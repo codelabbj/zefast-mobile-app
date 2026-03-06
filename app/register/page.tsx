@@ -32,7 +32,7 @@ const createRegisterSchema = (includeReferralCode: boolean) => {
 
   if (includeReferralCode) {
     return baseSchema.extend({
-      referral_code: z.string().optional(),
+      referrer_code: z.string().optional(),
     })
   }
 
@@ -81,9 +81,9 @@ export default function RegisterPage() {
         re_password: data.re_password,
       }
 
-      // Only include referral_code if referral_bonus is enabled and code is provided
+      // Only include referrer_code if referral_bonus is enabled and code is provided
       if (referralBonusEnabled && referralCode.trim()) {
-        payload.referral_code = referralCode.trim()
+        payload.referrer_code = referralCode.trim()
       }
 
       await api.post("/auth/registration", payload)
@@ -205,9 +205,9 @@ export default function RegisterPage() {
 
             {referralBonusEnabled && (
               <div className="space-y-2">
-                <Label htmlFor="referral_code">Code de parrainage (optionnel)</Label>
+                <Label htmlFor="referrer_code">Code de parrainage (optionnel)</Label>
                 <Input
-                  id="referral_code"
+                  id="referrer_code"
                   type="text"
                   placeholder="Code de parrainage"
                   value={referralCode}
