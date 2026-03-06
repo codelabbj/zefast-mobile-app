@@ -72,6 +72,10 @@ export interface Transaction {
     image: string
   }
   network: number
+  message?: string
+  ussd_code?: string
+  transaction_link?: string
+  payment_by_link?: boolean
   source: SourceType
 }
 

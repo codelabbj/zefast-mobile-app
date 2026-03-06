@@ -15,6 +15,9 @@ import { AuthGuard } from "@/components/auth-guard"
 import api from "@/lib/api"
 import type { Platform, Network, UserPhone, UserAppId, Settings } from "@/lib/types"
 import { formatPhoneNumberForAPI } from "@/lib/utils"
+import { TransactionSummaryDialog } from "@/components/transaction-summary-dialog"
+import { transactionApi } from "@/lib/api-client"
+import type { Transaction } from "@/lib/types"
 
 function DepositContent() {
   const { t } = useTranslation()
@@ -38,6 +41,8 @@ function DepositContent() {
   const [transactionLink, setTransactionLink] = useState<string | null>(null)
   const previousStepRef = useRef(1)
   const isNavigatingBackRef = useRef(false)
+  const [lastTransaction, setLastTransaction] = useState<Transaction | null>(null)
+  const [isTransactionSummaryOpen, setIsTransactionSummaryOpen] = useState(false)
 
   const selectedNetworkName = selectedNetwork?.name?.toLowerCase()
   const isMoovNetwork = selectedNetworkName === "moov"
@@ -159,21 +164,30 @@ function DepositContent() {
       const response = await api.post("/mobcash/transaction-deposit", payload)
       return response.data
     },
-    onSuccess: (data) => {
+    onSuccess: async(data) => {
       toast.success("Dépôt créé avec succès! En attente de confirmation.")
 
-      // Handle network-specific payment flows
-      if (selectedNetwork?.name?.toLowerCase() === 'moov') {
-        handleMoovDeposit(data)
-      } else if (selectedNetwork?.name?.toLowerCase() === 'orange') {
-        handleOrangeDeposit(data)
-      } else {
-        // Default behavior for other networks
-        if (data?.transaction_link) {
-          setTransactionLink(data.transaction_link)
-          setShowTransactionLinkDialog(true)
+      try {
+        const lastTrans = await transactionApi.getLastTransaction()
+        setLastTransaction(lastTrans)
+        setIsTransactionSummaryOpen(true)
+        return // Arrêter ici
+      } catch (error) {
+        console.error("Erreur getLastTransaction:", error)
+        // Continuer flux normal
+        // Handle network-specific payment flows
+        if (selectedNetwork?.name?.toLowerCase() === 'moov') {
+          handleMoovDeposit(data)
+        } else if (selectedNetwork?.name?.toLowerCase() === 'orange') {
+          handleOrangeDeposit(data)
         } else {
-          router.push("/dashboard")
+          // Default behavior for other networks
+          if (data?.transaction_link) {
+            setTransactionLink(data.transaction_link)
+            setShowTransactionLinkDialog(true)
+          } else {
+            router.push("/dashboard")
+          }
         }
       }
     },
@@ -191,6 +205,36 @@ function DepositContent() {
       }
     },
   })
+
+  const handleCancelTransaction = async (reference: string) => {
+    await transactionApi.cancelTransaction(reference)
+    setTimeout(() => {
+      router.push("/dashboard")
+    }, 1000)
+  }
+
+  const handleFinalizeTransaction = async (reference: string) => {
+    try {
+      const finalizedData = await transactionApi.finalizeTransaction(reference)
+      setIsTransactionSummaryOpen(false)
+      // Handle network-specific payment flows
+      if (selectedNetwork?.name?.toLowerCase() === 'moov') {
+        handleMoovDeposit(finalizedData)
+      } else if (selectedNetwork?.name?.toLowerCase() === 'orange') {
+        handleOrangeDeposit(finalizedData)
+      } else {
+        // Default behavior for other networks
+        if (finalizedData?.transaction_link) {
+          setTransactionLink(finalizedData.transaction_link ?? null)
+          setShowTransactionLinkDialog(true)
+        } else {
+          router.push("/dashboard")
+        }
+      }
+    } catch (error) {
+      throw error
+    }
+  }
 
   const handleNext = () => {
     if (step === 1 && !selectedPlatform) {
@@ -395,7 +439,7 @@ function DepositContent() {
               <ArrowLeft className="h-5 w-5 text-foreground" />
             </button>
             <div className="flex-1">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary/80 via-accent/80 to-primary/80 bg-clip-text text-transparent">{t("deposit")}</h1>
+              <h1 className="text-2xl font-bold bg-linear-to-r from-primary/80 via-accent/80 to-primary/80 bg-clip-text text-transparent">{t("deposit")}</h1>
               <p className="text-xs text-muted-foreground mt-0.5 font-medium">Étape {step} sur 5</p>
             </div>
           </div>
@@ -403,7 +447,7 @@ function DepositContent() {
           {/* Progress Bar */}
           <div className="h-2 bg-card border border-border/50 rounded-full overflow-hidden shadow-inner">
             <div
-              className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-300 rounded-full shadow-lg shadow-primary/30"
+              className="h-full bg-linear-to-r from-primary to-accent transition-all duration-300 rounded-full shadow-lg shadow-primary/30"
               style={{ width: `${(step / 5) * 100}%` }}
             />
           </div>
@@ -431,12 +475,12 @@ function DepositContent() {
                       key={platform.id}
                       onClick={() => setSelectedPlatform(platform)}
                       className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${selectedPlatform?.id === platform.id
-                        ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                        ? "border-primary bg-linear-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
                         : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                         }`}
                     >
                       {selectedPlatform?.id === platform.id && (
-                        <div className="absolute top-2 right-2 bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                        <div className="absolute top-2 right-2 bg-linear-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                           <Check className="h-3.5 w-3.5 text-white" />
                         </div>
                       )}
@@ -488,7 +532,7 @@ function DepositContent() {
                       <div
                         key={betId.id}
                         className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${selectedBetId?.id === betId.id
-                          ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                          ? "border-primary bg-linear-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
                           : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                           }`}
                       >
@@ -502,7 +546,7 @@ function DepositContent() {
                           </div>
                           <div className="flex items-center gap-2 ml-3">
                             {selectedBetId?.id === betId.id && (
-                              <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                              <div className="bg-linear-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                                 <Check className="h-3 w-3 text-white" />
                               </div>
                             )}
@@ -564,12 +608,12 @@ function DepositContent() {
                       key={network.id}
                       onClick={() => setSelectedNetwork(network)}
                       className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all shadow-sm hover:shadow-md active:scale-95 ${selectedNetwork?.id === network.id
-                        ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                        ? "border-primary bg-linear-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
                         : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                         }`}
                     >
                       {selectedNetwork?.id === network.id && (
-                        <div className="absolute top-2 right-2 bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                        <div className="absolute top-2 right-2 bg-linear-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                           <Check className="h-3.5 w-3.5 text-white" />
                         </div>
                       )}
@@ -605,7 +649,7 @@ function DepositContent() {
                         <div
                           key={phone.id}
                           className={`p-4 rounded-2xl border-2 transition-all shadow-sm hover:shadow-md ${selectedPhone?.id === phone.id
-                            ? "border-primary bg-gradient-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
+                            ? "border-primary bg-linear-to-br from-primary/10 to-primary/5 dark:from-primary/20 dark:to-primary/10 shadow-lg shadow-primary/20"
                             : "border-border/50 dark:border-border hover:border-primary/50 dark:hover:border-primary/50 bg-card dark:bg-card"
                             }`}
                         >
@@ -619,7 +663,7 @@ function DepositContent() {
                             </div>
                             <div className="flex items-center gap-2 ml-3">
                               {selectedPhone?.id === phone.id && (
-                                <div className="bg-gradient-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
+                                <div className="bg-linear-to-br from-primary to-accent rounded-full p-1.5 shadow-lg shadow-primary/30">
                                   <Check className="h-3 w-3 text-white" />
                                 </div>
                               )}
@@ -732,7 +776,7 @@ function DepositContent() {
           <div className="bg-blue-50 dark:bg-blue-950/30 rounded-3xl border border-blue-200/50 dark:border-blue-800/50 overflow-hidden shadow-xl shadow-blue-200/30 dark:shadow-blue-900/30">
             <div className="p-5">
               <div className="flex items-start gap-3">
-                <svg className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div className="text-sm text-blue-900 dark:text-blue-100 leading-relaxed">
@@ -773,7 +817,7 @@ function DepositContent() {
           )}
           <button
             onClick={handleNext}
-            className="flex-1 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent text-white hover:from-accent/80 hover:to-primary/80 active:scale-[0.98] transition-all duration-200 font-bold text-sm shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40"
+            className="flex-1 h-12 rounded-2xl bg-linear-to-br from-primary to-accent text-white hover:from-accent/80 hover:to-primary/80 active:scale-[0.98] transition-all duration-200 font-bold text-sm shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40"
           >
             {step === 5 ? t("confirm") : t("next")}
           </button>
@@ -967,6 +1011,14 @@ function DepositContent() {
           </div>
         </DialogContent>
       </Dialog>
+      <TransactionSummaryDialog
+        isOpen={isTransactionSummaryOpen}
+        onClose={() => setIsTransactionSummaryOpen(false)}
+        transaction={lastTransaction}
+        onCancel={handleCancelTransaction}
+        onFinalize={handleFinalizeTransaction}
+        isLoading={false}
+      />
     </div>
   )
 }
