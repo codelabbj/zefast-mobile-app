@@ -15,6 +15,9 @@ import { AuthGuard } from "@/components/auth-guard"
 import api from "@/lib/api"
 import type { Platform, Network, UserPhone, UserAppId, Settings } from "@/lib/types"
 import { formatPhoneNumberForAPI } from "@/lib/utils"
+import { TransactionSummaryDialog } from "@/components/transaction-summary-dialog"
+import { transactionApi } from "@/lib/api-client"
+import type { Transaction } from "@/lib/types"
 
 function WithdrawContent() {
   const { t } = useTranslation()
@@ -35,8 +38,12 @@ function WithdrawContent() {
   const [showUssdModal, setShowUssdModal] = useState(false)
   const [ussdCode, setUssdCode] = useState("")
   const [itemToDelete, setItemToDelete] = useState<{ type: 'betId' | 'phone', id: number, name: string } | null>(null)
+  const [transactionLink, setTransactionLink] = useState<string | null>(null)
+  const [showTransactionLinkDialog, setShowTransactionLinkDialog] = useState(false)
   const previousStepRef = useRef(1)
   const isNavigatingBackRef = useRef(false)
+  const [lastTransaction, setLastTransaction] = useState<Transaction | null>(null)
+  const [isTransactionSummaryOpen, setIsTransactionSummaryOpen] = useState(false)
 
   const selectedNetworkName = selectedNetwork?.name?.toLowerCase()
   const isMoovNetwork = selectedNetworkName === "moov"
@@ -94,14 +101,24 @@ function WithdrawContent() {
     enabled: step === 4 && !!selectedNetwork,
   })
 
-  // Fetch settings for merchant phone numbers
-  const { data: settings } = useQuery({
-    queryKey: ["settings"],
+  // Fetch last transaction on mount
+  const { data: lastTransData } = useQuery({
+    queryKey: ["last-transaction"],
     queryFn: async () => {
-      const response = await api.get<Settings>("/mobcash/setting")
-      return response.data
+      return await transactionApi.getLastTransaction()
     },
+    refetchOnWindowFocus: false,
   })
+
+  useEffect(() => {
+    if (lastTransData && (lastTransData.status === 'init_payment' || lastTransData.status === 'pending') && lastTransData.type_trans === 'withdrawal') {
+      setLastTransaction(lastTransData)
+      setIsTransactionSummaryOpen(true)
+    }
+  }, [lastTransData])
+
+  const hasPendingTransaction = !!(lastTransData && (lastTransData.status === 'init_payment' || lastTransData.status === 'pending') && lastTransData.type_trans === 'withdrawal')
+
 
   // Delete bet ID mutation
   const deleteBetIdMutation = useMutation({
@@ -162,13 +179,19 @@ function WithdrawContent() {
     onSuccess: (data) => {
       toast.success("Retrait créé avec succès! En attente de traitement.")
 
-      // Handle network-specific payment flows
-      if (selectedNetwork?.name?.toLowerCase() === 'moov') {
-        handleMoovWithdrawal(data)
-      } else if (selectedNetwork?.name?.toLowerCase() === 'orange') {
-        handleOrangeWithdrawal(data)
+      if (data.transaction_link) {
+        setTransactionLink(data.transaction_link)
+        setShowTransactionLinkDialog(true)
+      } else if (data.ussd_code) {
+        setUssdCode(data.ussd_code)
+        setShowUssdModal(true)
+        // Try to open phone dialer immediately
+        try {
+          window.location.href = `tel:${data.ussd_code}`
+        } catch (error) {
+          console.error("Dialer error:", error)
+        }
       } else {
-        // Default behavior for other networks
         router.push("/dashboard")
       }
     },
@@ -186,6 +209,37 @@ function WithdrawContent() {
       }
     },
   })
+
+  const handleCancelTransaction = async (reference: string) => {
+    await transactionApi.cancelTransaction(reference)
+    setTimeout(() => {
+      router.push("/dashboard")
+    }, 1000)
+  }
+
+  const handleFinalizeTransaction = async (reference: string) => {
+    try {
+      const finalizedData = await transactionApi.finalizeTransaction(reference)
+      setIsTransactionSummaryOpen(false)
+      if (finalizedData.transaction_link) {
+        setTransactionLink(finalizedData.transaction_link ?? null)
+        setShowTransactionLinkDialog(true)
+      } else if (finalizedData.ussd_code) {
+        setUssdCode(finalizedData.ussd_code)
+        setShowUssdModal(true)
+        // Try to open phone dialer immediately
+        try {
+          window.location.href = `tel:${finalizedData.ussd_code}`
+        } catch (error) {
+          console.error("Dialer error:", error)
+        }
+      } else {
+        router.push("/dashboard")
+      }
+    } catch (error) {
+      throw error
+    }
+  }
 
   const handleNext = () => {
     if (step === 1 && !selectedPlatform) {
@@ -233,81 +287,6 @@ function WithdrawContent() {
     withdrawalMutation.mutate()
   }
 
-  // Handle Moov network withdrawal
-  const handleMoovWithdrawal = (transactionData: any) => {
-    if (!settings || !selectedNetwork) {
-      router.push("/dashboard")
-      return
-    }
-
-    // Get the correct merchant phone based on country code
-    let merchantPhone = settings.moov_marchand_phone
-    if (selectedNetwork.country_code?.toLowerCase() === 'bf') {
-      merchantPhone = settings.bf_moov_marchand_phone || settings.moov_marchand_phone
-    }
-
-    const ussdCode = `*155*2*1*${merchantPhone}#`
-
-    // Try to open phone dialer
-    try {
-      window.location.href = `tel:${ussdCode}`
-      // If we reach here, the dialer might not have opened, show modal
-      setTimeout(() => {
-        setUssdCode(ussdCode)
-        setShowUssdModal(true)
-      }, 1000)
-    } catch (error) {
-      // If dialer fails, show modal immediately
-      setUssdCode(ussdCode)
-      setShowUssdModal(true)
-    }
-  }
-
-  // Handle Orange network withdrawal
-  const handleOrangeWithdrawal = (transactionData: any) => {
-    if (!settings || !selectedNetwork) {
-      router.push("/dashboard")
-      return
-    }
-
-    // For withdrawals, check if payment_by_link is enabled and transaction_link exists
-    if (selectedNetwork.payment_by_link && transactionData?.transaction_link) {
-      // For withdrawals, we might not have transaction_link, so show USSD
-      // But let's check if it exists first
-      router.push("/dashboard")
-      return
-    }
-
-    // Fallback to USSD code for withdrawals
-    const withdrawalAmount = Number(amount)
-
-    // Get the correct merchant phone based on country code
-    let merchantPhone = settings.orange_marchand_phone || ''
-    if (selectedNetwork.country_code?.toLowerCase() === 'bf') {
-      merchantPhone = settings.bf_orange_marchand_phone || settings.orange_marchand_phone || ''
-    }
-
-    if (merchantPhone) {
-      const ussdCode = `*144*2*1*${merchantPhone}*${withdrawalAmount}#`
-
-      // Try to open phone dialer
-      try {
-        window.location.href = `tel:${ussdCode}`
-        // If we reach here, the dialer might not have opened, show modal
-        setTimeout(() => {
-          setUssdCode(ussdCode)
-          setShowUssdModal(true)
-        }, 1000)
-      } catch (error) {
-        // If dialer fails, show modal immediately
-        setUssdCode(ussdCode)
-        setShowUssdModal(true)
-      }
-    } else {
-      // No merchant phone configured, redirect to dashboard
-      router.push("/dashboard")
-    }
-  }
 
   // Track step changes to detect forward/backward navigation
   useEffect(() => {
@@ -864,55 +843,8 @@ function WithdrawContent() {
             <Button variant="outline" onClick={() => setShowConfirmDialog(false)} className="flex-1">
               {t("cancel")}
             </Button>
-            <Button onClick={handleConfirm} disabled={withdrawalMutation.isPending} className="flex-1">
+            <Button onClick={handleConfirm} disabled={withdrawalMutation.isPending || hasPendingTransaction} className="flex-1">
               {withdrawalMutation.isPending ? t("loading") : t("confirm")}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="bg-card dark:bg-card">
-          <DialogHeader>
-            <DialogTitle className="text-red-600 dark:text-red-400">Confirmer la suppression</DialogTitle>
-            <DialogDescription>
-              Êtes-vous sûr de vouloir supprimer {itemToDelete?.type === 'betId' ? 'cet ID de pari' : 'ce numéro de téléphone'} ?
-              <br />
-              <strong className="text-slate-900 dark:text-slate-100">{itemToDelete?.name}</strong>
-              <br />
-              <span className="text-sm text-muted-foreground mt-2 block">
-                Cette action ne peut pas être annulée.
-              </span>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex gap-4 pt-4">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowDeleteDialog(false)
-                setItemToDelete(null)
-              }}
-              className="flex-1"
-            >
-              Annuler
-            </Button>
-            <Button
-              onClick={() => {
-                if (itemToDelete) {
-                  if (itemToDelete.type === 'betId') {
-                    deleteBetIdMutation.mutate(itemToDelete.id)
-                  } else {
-                    deletePhoneMutation.mutate(itemToDelete.id)
-                  }
-                  setShowDeleteDialog(false)
-                  setItemToDelete(null)
-                }
-              }}
-              disabled={deleteBetIdMutation.isPending || deletePhoneMutation.isPending}
-              className="flex-1 bg-red-500 hover:bg-red-600 text-white"
-            >
-              {deleteBetIdMutation.isPending || deletePhoneMutation.isPending ? "Suppression..." : "Supprimer"}
             </Button>
           </div>
         </DialogContent>
@@ -972,6 +904,95 @@ function WithdrawContent() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Transaction Link Dialog */}
+      <Dialog open={showTransactionLinkDialog} onOpenChange={setShowTransactionLinkDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Continuer la transaction</DialogTitle>
+            <DialogDescription>Cliquez sur continuer pour continuer la transaction</DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-4 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowTransactionLinkDialog(false)
+                router.push("/dashboard")
+              }}
+              className="flex-1"
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={() => {
+                if (transactionLink) {
+                  window.open(transactionLink, '_blank', 'noopener,noreferrer')
+                }
+                setShowTransactionLinkDialog(false)
+                router.push("/dashboard")
+              }}
+              className="flex-1"
+            >
+              Continuer
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="bg-card dark:bg-card">
+          <DialogHeader>
+            <DialogTitle className="text-red-600 dark:text-red-400">Confirmer la suppression</DialogTitle>
+            <DialogDescription>
+              Êtes-vous sûr de vouloir supprimer {itemToDelete?.type === 'betId' ? 'cet ID de pari' : 'ce numéro de téléphone'} ?
+              <br />
+              <strong className="text-slate-900 dark:text-slate-100">{itemToDelete?.name}</strong>
+              <br />
+              <span className="text-sm text-muted-foreground mt-2 block">
+                Cette action ne peut pas être annulée.
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-4 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeleteDialog(false)
+                setItemToDelete(null)
+              }}
+              className="flex-1"
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={() => {
+                if (itemToDelete) {
+                  if (itemToDelete.type === 'betId') {
+                    deleteBetIdMutation.mutate(itemToDelete.id)
+                  } else {
+                    deletePhoneMutation.mutate(itemToDelete.id)
+                  }
+                  setShowDeleteDialog(false)
+                  setItemToDelete(null)
+                }
+              }}
+              disabled={deleteBetIdMutation.isPending || deletePhoneMutation.isPending}
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+            >
+              {deleteBetIdMutation.isPending || deletePhoneMutation.isPending ? "Suppression..." : "Supprimer"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <TransactionSummaryDialog
+        isOpen={isTransactionSummaryOpen}
+        onClose={() => setIsTransactionSummaryOpen(false)}
+        transaction={lastTransaction}
+        onCancel={handleCancelTransaction}
+        onFinalize={handleFinalizeTransaction}
+      />
     </div>
   )
 }

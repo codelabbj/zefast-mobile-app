@@ -44,13 +44,7 @@ function DepositContent() {
   const [lastTransaction, setLastTransaction] = useState<Transaction | null>(null)
   const [isTransactionSummaryOpen, setIsTransactionSummaryOpen] = useState(false)
 
-  const selectedNetworkName = selectedNetwork?.name?.toLowerCase()
-  const isMoovNetwork = selectedNetworkName === "moov"
   const parsedAmount = Number(amount)
-  const moovAdjustedAmount =
-    isMoovNetwork && Number.isFinite(parsedAmount) && parsedAmount > 0
-      ? Math.max(0, Math.floor(parsedAmount - parsedAmount * 0.01))
-      : null
 
   // Fetch platforms
   const { data: platforms, isLoading: loadingPlatforms } = useQuery({
@@ -100,14 +94,24 @@ function DepositContent() {
     enabled: step === 4 && !!selectedNetwork,
   })
 
-  // Fetch settings for merchant phone numbers
-  const { data: settings } = useQuery({
-    queryKey: ["settings"],
+  // Fetch last transaction on mount
+  const { data: lastTransData } = useQuery({
+    queryKey: ["last-transaction"],
     queryFn: async () => {
-      const response = await api.get<Settings>("/mobcash/setting")
-      return response.data
+      return await transactionApi.getLastTransaction()
     },
+    refetchOnWindowFocus: false,
   })
+
+  useEffect(() => {
+    if (lastTransData && (lastTransData.status === 'init_payment' || lastTransData.status === 'pending') && lastTransData.type_trans === 'deposit') {
+      setLastTransaction(lastTransData)
+      setIsTransactionSummaryOpen(true)
+    }
+  }, [lastTransData])
+
+  const hasPendingTransaction = !!(lastTransData && (lastTransData.status === 'init_payment' || lastTransData.status === 'pending') && lastTransData.type_trans === 'deposit')
+
 
   // Delete bet ID mutation
   const deleteBetIdMutation = useMutation({
@@ -164,31 +168,22 @@ function DepositContent() {
       const response = await api.post("/mobcash/transaction-deposit", payload)
       return response.data
     },
-    onSuccess: async(data) => {
+    onSuccess: (data) => {
       toast.success("Dépôt créé avec succès! En attente de confirmation.")
 
-      try {
-        const lastTrans = await transactionApi.getLastTransaction()
-        setLastTransaction(lastTrans)
-        setIsTransactionSummaryOpen(true)
-        return // Arrêter ici
-      } catch (error) {
-        console.error("Erreur getLastTransaction:", error)
-        // Continuer flux normal
-        // Handle network-specific payment flows
-        if (selectedNetwork?.name?.toLowerCase() === 'moov') {
-          handleMoovDeposit(data)
-        } else if (selectedNetwork?.name?.toLowerCase() === 'orange') {
-          handleOrangeDeposit(data)
-        } else {
-          // Default behavior for other networks
-          if (data?.transaction_link) {
-            setTransactionLink(data.transaction_link)
-            setShowTransactionLinkDialog(true)
-          } else {
-            router.push("/dashboard")
-          }
+      if (data.transaction_link) {
+        setTransactionLink(data.transaction_link)
+        setShowTransactionLinkDialog(true)
+      } else if (data.ussd_code) {
+        setUssdCode(data.ussd_code)
+        setShowUssdModal(true)
+        try {
+          window.location.href = `tel:${data.ussd_code}`
+        } catch (err) {
+          console.error("Dialer error:", err)
         }
+      } else {
+        router.push("/dashboard")
       }
     },
     onError: (error: any) => {
@@ -217,19 +212,20 @@ function DepositContent() {
     try {
       const finalizedData = await transactionApi.finalizeTransaction(reference)
       setIsTransactionSummaryOpen(false)
-      // Handle network-specific payment flows
-      if (selectedNetwork?.name?.toLowerCase() === 'moov') {
-        handleMoovDeposit(finalizedData)
-      } else if (selectedNetwork?.name?.toLowerCase() === 'orange') {
-        handleOrangeDeposit(finalizedData)
-      } else {
-        // Default behavior for other networks
-        if (finalizedData?.transaction_link) {
-          setTransactionLink(finalizedData.transaction_link ?? null)
-          setShowTransactionLinkDialog(true)
-        } else {
-          router.push("/dashboard")
+      if (finalizedData.transaction_link) {
+        setTransactionLink(finalizedData.transaction_link ?? null)
+        setShowTransactionLinkDialog(true)
+      } else if (finalizedData.ussd_code) {
+        setUssdCode(finalizedData.ussd_code)
+        setShowUssdModal(true)
+        // Try to open phone dialer immediately
+        try {
+          window.location.href = `tel:${finalizedData.ussd_code}`
+        } catch (error) {
+          console.error("Dialer error:", error)
         }
+      } else {
+        router.push("/dashboard")
       }
     } catch (error) {
       throw error
@@ -278,75 +274,6 @@ function DepositContent() {
     depositMutation.mutate()
   }
 
-  // Handle Moov network deposit
-  const handleMoovDeposit = (transactionData: any) => {
-    if (!settings || !selectedNetwork) return
-
-    // Get the correct merchant phone based on country code
-    let merchantPhone = settings.moov_marchand_phone
-    if (selectedNetwork.country_code?.toLowerCase() === 'bf') {
-      merchantPhone = settings.bf_moov_marchand_phone || settings.moov_marchand_phone
-    }
-
-    const adjustedAmount = moovAdjustedAmount || parsedAmount
-    const ussdCode = `*155*2*1*${merchantPhone}*${adjustedAmount}#`
-
-    // Try to open phone dialer
-    try {
-      window.location.href = `tel:${ussdCode}`
-      // If we reach here, the dialer might not have opened, show modal
-      setTimeout(() => {
-        setUssdCode(ussdCode)
-        setShowUssdModal(true)
-      }, 1000)
-    } catch (error) {
-      // If dialer fails, show modal immediately
-      setUssdCode(ussdCode)
-      setShowUssdModal(true)
-    }
-  }
-
-  // Handle Orange network deposit
-  const handleOrangeDeposit = (transactionData: any) => {
-    if (!settings || !selectedNetwork) return
-
-    // Check if payment_by_link is enabled and transaction_link exists
-    if (selectedNetwork.payment_by_link && transactionData?.transaction_link) {
-      setTransactionLink(transactionData.transaction_link)
-      setShowTransactionLinkDialog(true)
-      return
-    }
-
-    // Fallback to USSD code
-    const originalAmount = Number(amount)
-
-    // Get the correct merchant phone based on country code
-    let merchantPhone = settings.orange_marchand_phone || ''
-    if (selectedNetwork.country_code?.toLowerCase() === 'bf') {
-      merchantPhone = settings.bf_orange_marchand_phone || settings.orange_marchand_phone || ''
-    }
-
-    if (merchantPhone) {
-      const ussdCode = `*144*2*1*${merchantPhone}*${originalAmount}#`
-
-      // Try to open phone dialer
-      try {
-        window.location.href = `tel:${ussdCode}`
-        // If we reach here, the dialer might not have opened, show modal
-        setTimeout(() => {
-          setUssdCode(ussdCode)
-          setShowUssdModal(true)
-        }, 1000)
-      } catch (error) {
-        // If dialer fails, show modal immediately
-        setUssdCode(ussdCode)
-        setShowUssdModal(true)
-      }
-    } else {
-      // No merchant phone configured, redirect to dashboard
-      router.push("/dashboard")
-    }
-  }
 
   // Track step changes to detect forward/backward navigation
   useEffect(() => {
@@ -869,7 +796,7 @@ function DepositContent() {
             <Button variant="outline" onClick={() => setShowConfirmDialog(false)} className="flex-1">
               {t("cancel")}
             </Button>
-            <Button onClick={handleConfirm} disabled={depositMutation.isPending} className="flex-1">
+            <Button onClick={handleConfirm} disabled={depositMutation.isPending || hasPendingTransaction} className="flex-1">
               {depositMutation.isPending ? t("loading") : t("confirm")}
             </Button>
           </div>
@@ -991,11 +918,6 @@ function DepositContent() {
                 Composer
               </Button>
             </div>
-            {isMoovNetwork && (
-              <p className="text-xs text-center text-muted-foreground">
-                Le code USSD contient déjà le montant ajusté. Composez simplement le code ci-dessus.
-              </p>
-            )}
           </div>
           <div className="flex gap-4 pt-4">
             <Button
