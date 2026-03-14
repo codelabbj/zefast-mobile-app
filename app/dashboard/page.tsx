@@ -23,6 +23,7 @@ import { notificationService } from "@/lib/firebase-notifications"
 import api from "@/lib/api"
 import type { Transaction, Advertisement, PaginatedResponse } from "@/lib/types"
 import { formatDate } from "@/lib/utils"
+import { getTransactionStatusLabel } from "@/lib/constants"
 import { FloatingMessageButton } from "@/components/FloatingMessageButton"
 import { AdvertisementCarousel } from "@/components/AdvertisementCarousel"
 import { InAppNotification, useInAppNotifications } from "@/components/InAppNotification"
@@ -138,23 +139,25 @@ function DashboardContent() {
     : "relative overflow-hidden rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-800/50 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50"
 
   const getStatusBadge = (status: string) => {
+    const statusLabel = getTransactionStatusLabel(status as any)
     switch (status) {
       case "accept":
         return (
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-primary/20 to-accent/10 dark:from-primary/30 dark:to-accent/20 text-primary dark:text-accent border border-primary/30 dark:border-primary/50 shadow-sm">
-            {t("accept")}
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-green-100 to-green-50 dark:from-green-900/40 dark:to-green-800/40 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-700 shadow-sm">
+            {statusLabel}
           </span>
         )
       case "reject":
+      case "error":
         return (
           <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-red-100 to-red-50 dark:from-red-900/40 dark:to-red-800/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700 shadow-sm">
-            {t("reject")}
+            {statusLabel}
           </span>
         )
       default:
         return (
           <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-gradient-to-r from-primary/20 to-accent/10 dark:from-primary/40 dark:to-accent/20 text-primary dark:text-accent border border-primary/30 dark:border-primary/50 shadow-sm">
-            {t("pending")}
+            {statusLabel}
           </span>
         )
     }
