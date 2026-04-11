@@ -395,7 +395,10 @@ function DashboardContent() {
                   <button
                     key={transaction.id}
                     className="w-full flex items-center gap-4 px-5 py-4 active:bg-slate-50 dark:active:bg-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-all duration-200 touch-manipulation text-left group"
-                    onClick={() => router.push("/transactions")}
+                    onClick={() => {
+                      sessionStorage.setItem('cached_transaction', JSON.stringify(transaction))
+                      router.push(`/transactions/detail?id=${transaction.id}`)
+                    }}
                   >
                     <div className="flex-shrink-0">
                       {getTypeIcon(transaction.type_trans)}
