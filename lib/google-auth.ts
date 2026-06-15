@@ -60,7 +60,7 @@ export async function signInWithGoogle(): Promise<GoogleAuthResult> {
  */
 function googlePopupSignIn(): Promise<string | null> {
   return new Promise((resolve) => {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "571907882935-cui1dgm3emj9grpqh255t3a19enkoe38.apps.googleusercontent.com"
     const redirectUri = typeof window !== "undefined" ? `${window.location.origin}/auth/google/callback` : ""
     const nonce = Math.random().toString(36).slice(2)
 
