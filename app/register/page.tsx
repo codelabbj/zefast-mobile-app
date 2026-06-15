@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import api from "@/lib/api"
+import { GoogleButton } from "@/components/google-button"
 
 interface SettingsResponse {
   referral_bonus: boolean
@@ -102,7 +103,7 @@ export default function RegisterPage() {
         <CardHeader className="space-y-1">
           <div className="flex justify-center mb-2">
             <img 
-              src="/Zefast-logo.png" 
+              src="/Zefast-logo.webp" 
               alt="Zefast Logo" 
               className="h-24 w-auto object-contain"
             />
@@ -223,6 +224,8 @@ export default function RegisterPage() {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? t("loading") : t("registerButton")}
             </Button>
+
+            <GoogleButton mode="register" />
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">

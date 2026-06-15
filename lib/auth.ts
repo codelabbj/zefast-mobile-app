@@ -22,19 +22,40 @@ export const saveAuthData = (authData: AuthResponse, rememberMe: boolean = true)
     storage.setItem("refresh_token", authData.refresh)
     storage.setItem("user", JSON.stringify(authData.data))
     storage.setItem("remember_me", rememberMe.toString())
+    // Always persist remember_me flag in localStorage regardless of mode
+    localStorage.setItem("remember_me", rememberMe.toString())
   }
 }
 
 const getStorage = () => {
   if (typeof window !== "undefined") {
-    const rememberMe = localStorage.getItem("remember_me") === "true"
-    return rememberMe ? localStorage : sessionStorage
+    // Default to localStorage (persistent) — only use sessionStorage if user
+    // explicitly opted out of "remember me" on a non-mobile platform.
+    const rememberMe = localStorage.getItem("remember_me")
+    // If never set (fresh install) OR set to true → use localStorage
+    if (rememberMe === null || rememberMe === "true") {
+      return localStorage
+    }
+    return sessionStorage
   }
   return localStorage
 }
 
 export const getUser = (): User | null => {
   if (typeof window !== "undefined") {
+    // Migrate tokens from sessionStorage to localStorage if needed (fixes logout-on-restart)
+    const rememberMe = localStorage.getItem("remember_me")
+    if (rememberMe === null || rememberMe === "true") {
+      const sessionToken = sessionStorage.getItem("access_token")
+      if (sessionToken) {
+        localStorage.setItem("access_token", sessionToken)
+        localStorage.setItem("refresh_token", sessionStorage.getItem("refresh_token") || "")
+        localStorage.setItem("user", sessionStorage.getItem("user") || "")
+        localStorage.setItem("remember_me", "true")
+        sessionStorage.clear()
+      }
+    }
+
     const storage = getStorage()
     const userStr = storage.getItem("user")
     if (userStr) {

@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import api from "@/lib/api"
 import { saveAuthData, type AuthResponse } from "@/lib/auth"
 import { notificationService } from "@/lib/firebase-notifications"
+import { GoogleButton } from "@/components/google-button"
 
 const loginSchema = z.object({
   email_or_phone: z.string().min(1, "Ce champ est requis"),
@@ -202,7 +203,7 @@ export default function LoginPage() {
         <CardHeader className="space-y-3 text-center">
           <div className="flex justify-center mb-2">
             <img 
-              src="/Zefast-logo.png" 
+              src="/Zefast-logo.webp" 
               alt="Zefast Logo" 
               className="h-24 w-auto object-contain"
             />
@@ -278,6 +279,8 @@ export default function LoginPage() {
             <Button type="submit" className="w-full mobile-button" disabled={isLoading}>
               {isLoading ? t("loading") : t("loginButton")}
             </Button>
+
+            <GoogleButton mode="login" />
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-3">

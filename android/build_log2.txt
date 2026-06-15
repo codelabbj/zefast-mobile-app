@@ -1,0 +1,726 @@
+﻿Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Configure project :app
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+> Configure project :capacitor-cordova-android-plugins
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :capacitor-android:preBuild UP-TO-DATE
+> Task :capacitor-android:preReleaseBuild UP-TO-DATE
+> Task :capacitor-android:writeReleaseAarMetadata
+> Task :capacitor-app:preBuild UP-TO-DATE
+> Task :capacitor-app:preReleaseBuild UP-TO-DATE
+> Task :capacitor-app:writeReleaseAarMetadata
+> Task :capacitor-browser:preBuild UP-TO-DATE
+> Task :capacitor-browser:preReleaseBuild UP-TO-DATE
+> Task :capacitor-browser:writeReleaseAarMetadata
+> Task :capacitor-cordova-android-plugins:preBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:preReleaseBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:writeReleaseAarMetadata
+> Task :capacitor-filesystem:preBuild UP-TO-DATE
+> Task :capacitor-filesystem:preReleaseBuild UP-TO-DATE
+> Task :capacitor-filesystem:writeReleaseAarMetadata
+> Task :capacitor-firebase-messaging:preBuild UP-TO-DATE
+> Task :capacitor-firebase-messaging:preReleaseBuild UP-TO-DATE
+> Task :app:javaPreCompileRelease
+> Task :capacitor-local-notifications:preBuild UP-TO-DATE
+> Task :capacitor-local-notifications:preReleaseBuild UP-TO-DATE
+> Task :capacitor-firebase-messaging:writeReleaseAarMetadata
+> Task :capacitor-push-notifications:preBuild UP-TO-DATE
+> Task :capacitor-push-notifications:preReleaseBuild UP-TO-DATE
+> Task :capacitor-local-notifications:writeReleaseAarMetadata
+> Task :capacitor-share:preBuild UP-TO-DATE
+> Task :capacitor-push-notifications:writeReleaseAarMetadata
+> Task :capacitor-share:preReleaseBuild UP-TO-DATE
+> Task :capgo-capacitor-updater:preBuild UP-TO-DATE
+> Task :capgo-capacitor-updater:preReleaseBuild UP-TO-DATE
+> Task :capacitor-share:writeReleaseAarMetadata
+> Task :capgo-capacitor-updater:writeReleaseAarMetadata
+> Task :codetrix-studio-capacitor-google-auth:preBuild UP-TO-DATE
+> Task :codetrix-studio-capacitor-google-auth:preReleaseBuild UP-TO-DATE
+> Task :codetrix-studio-capacitor-google-auth:writeReleaseAarMetadata
+> Task :app:generateReleaseResValues
+> Task :app:checkReleaseAarMetadata
+> Task :app:processReleaseGoogleServices
+> Task :capacitor-android:generateReleaseResValues
+> Task :capacitor-android:generateReleaseResources
+> Task :capacitor-android:packageReleaseResources
+> Task :capacitor-app:generateReleaseResValues
+> Task :capacitor-app:generateReleaseResources
+> Task :capacitor-app:packageReleaseResources
+> Task :capacitor-browser:generateReleaseResValues
+> Task :capacitor-browser:generateReleaseResources
+> Task :capacitor-browser:packageReleaseResources
+> Task :capacitor-cordova-android-plugins:generateReleaseResValues
+> Task :capacitor-cordova-android-plugins:generateReleaseResources
+> Task :capacitor-cordova-android-plugins:packageReleaseResources
+> Task :capacitor-filesystem:generateReleaseResValues
+> Task :capacitor-filesystem:generateReleaseResources
+> Task :capacitor-filesystem:packageReleaseResources
+> Task :capacitor-firebase-messaging:generateReleaseResValues
+> Task :capacitor-firebase-messaging:generateReleaseResources
+> Task :capacitor-firebase-messaging:packageReleaseResources
+> Task :capacitor-local-notifications:generateReleaseResValues
+> Task :capacitor-local-notifications:generateReleaseResources
+> Task :capacitor-local-notifications:packageReleaseResources
+> Task :capacitor-push-notifications:generateReleaseResValues
+> Task :capacitor-push-notifications:generateReleaseResources
+> Task :capacitor-push-notifications:packageReleaseResources
+> Task :capacitor-share:generateReleaseResValues
+> Task :capacitor-share:generateReleaseResources
+> Task :capacitor-share:packageReleaseResources
+> Task :capgo-capacitor-updater:generateReleaseResValues
+> Task :capgo-capacitor-updater:generateReleaseResources
+> Task :capgo-capacitor-updater:packageReleaseResources
+> Task :codetrix-studio-capacitor-google-auth:generateReleaseResValues
+> Task :codetrix-studio-capacitor-google-auth:generateReleaseResources
+> Task :codetrix-studio-capacitor-google-auth:packageReleaseResources
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:mergeReleaseResources
+> Task :app:parseReleaseLocalResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :capacitor-android:extractDeepLinksRelease
+> Task :capacitor-android:processReleaseManifest
+> Task :capacitor-app:extractDeepLinksRelease
+> Task :capacitor-app:processReleaseManifest
+> Task :capacitor-browser:extractDeepLinksRelease
+> Task :capacitor-browser:processReleaseManifest
+> Task :capacitor-cordova-android-plugins:extractDeepLinksRelease
+> Task :capacitor-cordova-android-plugins:processReleaseManifest
+> Task :capacitor-filesystem:extractDeepLinksRelease
+> Task :capacitor-filesystem:processReleaseManifest
+> Task :capacitor-firebase-messaging:extractDeepLinksRelease
+> Task :capacitor-firebase-messaging:processReleaseManifest
+> Task :capacitor-local-notifications:extractDeepLinksRelease
+> Task :capacitor-local-notifications:processReleaseManifest
+> Task :capacitor-push-notifications:extractDeepLinksRelease
+> Task :capacitor-push-notifications:processReleaseManifest
+> Task :capacitor-share:extractDeepLinksRelease
+> Task :capacitor-share:processReleaseManifest
+> Task :capgo-capacitor-updater:extractDeepLinksRelease
+> Task :capgo-capacitor-updater:processReleaseManifest
+> Task :codetrix-studio-capacitor-google-auth:extractDeepLinksRelease
+> Task :codetrix-studio-capacitor-google-auth:processReleaseManifest
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:processReleaseManifestForPackage
+> Task :capacitor-android:parseReleaseLocalResources
+> Task :capacitor-android:generateReleaseRFile
+> Task :capacitor-app:parseReleaseLocalResources
+> Task :capacitor-app:generateReleaseRFile
+> Task :capacitor-browser:parseReleaseLocalResources
+> Task :capacitor-browser:generateReleaseRFile
+> Task :capacitor-cordova-android-plugins:parseReleaseLocalResources
+> Task :capacitor-cordova-android-plugins:generateReleaseRFile
+> Task :capacitor-filesystem:parseReleaseLocalResources
+> Task :capacitor-filesystem:generateReleaseRFile
+> Task :capacitor-firebase-messaging:parseReleaseLocalResources
+> Task :capacitor-firebase-messaging:generateReleaseRFile
+> Task :capacitor-local-notifications:parseReleaseLocalResources
+> Task :capacitor-local-notifications:generateReleaseRFile
+> Task :capacitor-push-notifications:parseReleaseLocalResources
+> Task :capacitor-push-notifications:generateReleaseRFile
+> Task :capacitor-share:parseReleaseLocalResources
+> Task :capacitor-share:generateReleaseRFile
+> Task :capgo-capacitor-updater:parseReleaseLocalResources
+> Task :capgo-capacitor-updater:generateReleaseRFile
+> Task :codetrix-studio-capacitor-google-auth:parseReleaseLocalResources
+> Task :codetrix-studio-capacitor-google-auth:generateReleaseRFile
+> Task :capacitor-android:javaPreCompileRelease
+
+> Task :capacitor-android:compileReleaseJavaWithJavac
+.\gradlew : Note: 
+Some input files 
+use unchecked or 
+unsafe operations.
+At line:1 char:1
++ .\gradlew 
+assembleRelease 
+--rerun-tasks 
+2>&1 | Out-File 
+-FilePath "bu ...
++ ~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
+    + CategoryInf 
+   o          :   
+  NotSpecified:   
+  (Note: Some     
+inpu...afe op    
+erations.:Str    
+ing) [], Remo    
+teException
+    + FullyQualif 
+   iedErrorId :   
+  NativeCommand   
+ Error
+ 
+Note: Recompile 
+with 
+-Xlint:unchecked 
+for details.
+
+> Task :capacitor-android:bundleLibCompileToJarRelease
+> Task :capacitor-app:javaPreCompileRelease
+> Task :capacitor-app:compileReleaseJavaWithJavac
+> Task :capacitor-app:bundleLibCompileToJarRelease
+> Task :capacitor-browser:javaPreCompileRelease
+> Task :capacitor-browser:compileReleaseJavaWithJavac
+> Task :capacitor-browser:bundleLibCompileToJarRelease
+> Task :capacitor-cordova-android-plugins:javaPreCompileRelease
+> Task :capacitor-cordova-android-plugins:compileReleaseJavaWithJavac NO-SOURCE
+> Task :capacitor-cordova-android-plugins:bundleLibCompileToJarRelease
+> Task :capacitor-filesystem:checkKotlinGradlePluginConfigurationErrors
+> Task :app:processReleaseResources
+> Task :capacitor-filesystem:javaPreCompileRelease
+> Task :capacitor-firebase-messaging:javaPreCompileRelease
+
+> Task :capacitor-firebase-messaging:compileReleaseJavaWithJavac
+Note: C:\Users\rar
+sh\Documents\CodeL
+ab\zefast-mobile-a
+pp\node_modules\@c
+apacitor-firebase\
+messaging\android\
+src\main\java\io\c
+apawesome\capacito
+rjs\plugins\fireba
+se\messaging\Fireb
+aseMessagingHelper
+.java uses or 
+overrides a 
+deprecated API.
+Note: Recompile 
+with -Xlint:deprec
+ation for details.
+
+> Task :capacitor-firebase-messaging:bundleLibCompileToJarRelease
+> Task :capacitor-local-notifications:javaPreCompileRelease
+> Task :capacitor-filesystem:compileReleaseKotlin
+> Task :capacitor-local-notifications:compileReleaseJavaWithJavac
+> Task :capacitor-local-notifications:bundleLibCompileToJarRelease
+> Task :capacitor-push-notifications:javaPreCompileRelease
+> Task :capacitor-push-notifications:compileReleaseJavaWithJavac
+> Task :capacitor-push-notifications:bundleLibCompileToJarRelease
+> Task :capacitor-share:javaPreCompileRelease
+> Task :capacitor-share:compileReleaseJavaWithJavac
+> Task :capacitor-share:bundleLibCompileToJarRelease
+> Task :capgo-capacitor-updater:javaPreCompileRelease
+
+> Task :capgo-capacitor-updater:compileReleaseJavaWithJavac
+Note: C:\Users\rar
+sh\Documents\CodeL
+ab\zefast-mobile-a
+pp\node_modules\@c
+apgo\capacitor-upd
+ater\android\src\m
+ain\java\ee\forgr\
+capacitor_updater\
+CapacitorUpdaterPl
+ugin.java uses or 
+overrides a 
+deprecated API.
+Note: Recompile 
+with -Xlint:deprec
+ation for details.
+
+> Task :capgo-capacitor-updater:bundleLibCompileToJarRelease
+> Task :codetrix-studio-capacitor-google-auth:javaPreCompileRelease
+> Task :codetrix-studio-capacitor-google-auth:compileReleaseJavaWithJavac
+> Task :codetrix-studio-capacitor-google-auth:bundleLibCompileToJarRelease
+> Task :app:extractProguardFiles
+> Task :capacitor-android:bundleLibRuntimeToJarRelease
+> Task :capacitor-android:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-android:createFullJarRelease
+> Task :capacitor-android:extractProguardFiles
+> Task :capacitor-android:generateReleaseLintModel
+> Task :capacitor-android:prepareLintJarForPublish
+> Task :capacitor-app:bundleLibRuntimeToJarRelease
+> Task :capacitor-app:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-app:createFullJarRelease
+> Task :capacitor-app:extractProguardFiles
+> Task :capacitor-app:generateReleaseLintModel
+> Task :capacitor-app:prepareLintJarForPublish
+> Task :capacitor-browser:bundleLibRuntimeToJarRelease
+> Task :capacitor-browser:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-browser:createFullJarRelease
+> Task :capacitor-browser:extractProguardFiles
+> Task :capacitor-browser:generateReleaseLintModel
+> Task :capacitor-browser:prepareLintJarForPublish
+> Task :capacitor-cordova-android-plugins:bundleLibRuntimeToJarRelease
+> Task :capacitor-cordova-android-plugins:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-cordova-android-plugins:createFullJarRelease
+> Task :capacitor-cordova-android-plugins:extractProguardFiles
+> Task :capacitor-cordova-android-plugins:generateReleaseLintModel
+> Task :capacitor-cordova-android-plugins:prepareLintJarForPublish
+> Task :capacitor-filesystem:extractProguardFiles
+> Task :capacitor-filesystem:prepareLintJarForPublish
+> Task :capacitor-firebase-messaging:bundleLibRuntimeToJarRelease
+> Task :capacitor-firebase-messaging:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-firebase-messaging:createFullJarRelease
+> Task :capacitor-firebase-messaging:extractProguardFiles
+> Task :capacitor-firebase-messaging:generateReleaseLintModel
+> Task :capacitor-firebase-messaging:prepareLintJarForPublish
+> Task :capacitor-local-notifications:bundleLibRuntimeToJarRelease
+> Task :capacitor-local-notifications:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-local-notifications:createFullJarRelease
+> Task :capacitor-local-notifications:extractProguardFiles
+> Task :capacitor-local-notifications:generateReleaseLintModel
+> Task :capacitor-local-notifications:prepareLintJarForPublish
+> Task :capacitor-push-notifications:bundleLibRuntimeToJarRelease
+> Task :capacitor-push-notifications:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-push-notifications:createFullJarRelease
+> Task :capacitor-push-notifications:extractProguardFiles
+> Task :capacitor-push-notifications:generateReleaseLintModel
+> Task :capacitor-push-notifications:prepareLintJarForPublish
+> Task :capacitor-share:bundleLibRuntimeToJarRelease
+> Task :capacitor-share:processReleaseJavaRes NO-SOURCE
+> Task :capacitor-share:createFullJarRelease
+> Task :capacitor-share:extractProguardFiles
+> Task :capacitor-share:generateReleaseLintModel
+> Task :capacitor-share:prepareLintJarForPublish
+> Task :capgo-capacitor-updater:bundleLibRuntimeToJarRelease
+> Task :capgo-capacitor-updater:processReleaseJavaRes NO-SOURCE
+> Task :capgo-capacitor-updater:createFullJarRelease
+> Task :capgo-capacitor-updater:extractProguardFiles
+> Task :capgo-capacitor-updater:generateReleaseLintModel
+> Task :capgo-capacitor-updater:prepareLintJarForPublish
+> Task :codetrix-studio-capacitor-google-auth:bundleLibRuntimeToJarRelease
+> Task :codetrix-studio-capacitor-google-auth:processReleaseJavaRes NO-SOURCE
+> Task :codetrix-studio-capacitor-google-auth:createFullJarRelease
+> Task :codetrix-studio-capacitor-google-auth:extractProguardFiles
+> Task :codetrix-studio-capacitor-google-auth:generateReleaseLintModel
+> Task :codetrix-studio-capacitor-google-auth:prepareLintJarForPublish
+> Task :capacitor-firebase-messaging:mergeReleaseJniLibFolders
+> Task :capacitor-firebase-messaging:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-firebase-messaging:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-firebase-messaging:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-firebase-messaging:extractDeepLinksForAarRelease
+> Task :capacitor-firebase-messaging:extractReleaseAnnotations
+> Task :capacitor-firebase-messaging:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-firebase-messaging:mergeReleaseConsumerProguardFiles
+> Task :capacitor-firebase-messaging:mergeReleaseShaders
+> Task :capacitor-firebase-messaging:compileReleaseShaders NO-SOURCE
+> Task :capacitor-firebase-messaging:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-firebase-messaging:packageReleaseAssets
+> Task :capacitor-firebase-messaging:prepareReleaseArtProfile
+> Task :capacitor-firebase-messaging:mergeReleaseJavaResource
+> Task :capacitor-firebase-messaging:syncReleaseLibJars
+> Task :capacitor-firebase-messaging:bundleReleaseLocalLintAar
+> Task :capacitor-app:mergeReleaseJniLibFolders
+> Task :capacitor-app:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-app:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-app:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-app:extractDeepLinksForAarRelease
+> Task :capacitor-app:extractReleaseAnnotations
+> Task :capacitor-app:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-app:mergeReleaseConsumerProguardFiles
+> Task :capacitor-app:mergeReleaseShaders
+> Task :capacitor-app:compileReleaseShaders NO-SOURCE
+> Task :capacitor-app:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-app:packageReleaseAssets
+> Task :capacitor-app:prepareReleaseArtProfile
+> Task :capacitor-app:mergeReleaseJavaResource
+> Task :capacitor-app:syncReleaseLibJars
+> Task :capacitor-app:bundleReleaseLocalLintAar
+> Task :capacitor-browser:mergeReleaseJniLibFolders
+> Task :capacitor-browser:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-browser:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-browser:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-browser:extractDeepLinksForAarRelease
+> Task :capacitor-browser:extractReleaseAnnotations
+> Task :capacitor-browser:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-browser:mergeReleaseConsumerProguardFiles
+> Task :capacitor-browser:mergeReleaseShaders
+> Task :capacitor-browser:compileReleaseShaders NO-SOURCE
+> Task :capacitor-browser:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-browser:packageReleaseAssets
+> Task :capacitor-browser:prepareReleaseArtProfile
+> Task :capacitor-browser:mergeReleaseJavaResource
+> Task :capacitor-browser:syncReleaseLibJars
+> Task :capacitor-browser:bundleReleaseLocalLintAar
+> Task :capacitor-filesystem:mergeReleaseJniLibFolders
+> Task :capacitor-filesystem:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-filesystem:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-filesystem:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-filesystem:extractDeepLinksForAarRelease
+> Task :capacitor-filesystem:mergeReleaseShaders
+> Task :capacitor-filesystem:compileReleaseShaders NO-SOURCE
+> Task :capacitor-filesystem:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-filesystem:packageReleaseAssets
+> Task :capacitor-filesystem:prepareReleaseArtProfile
+> Task :capacitor-local-notifications:mergeReleaseJniLibFolders
+> Task :capacitor-local-notifications:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-local-notifications:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-local-notifications:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-local-notifications:extractDeepLinksForAarRelease
+> Task :capacitor-local-notifications:extractReleaseAnnotations
+> Task :capacitor-local-notifications:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-local-notifications:mergeReleaseConsumerProguardFiles
+> Task :capacitor-local-notifications:mergeReleaseShaders
+> Task :capacitor-local-notifications:compileReleaseShaders NO-SOURCE
+> Task :capacitor-local-notifications:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-local-notifications:packageReleaseAssets
+> Task :capacitor-local-notifications:prepareReleaseArtProfile
+> Task :capacitor-local-notifications:mergeReleaseJavaResource
+> Task :capacitor-local-notifications:syncReleaseLibJars
+> Task :capacitor-local-notifications:bundleReleaseLocalLintAar
+> Task :capacitor-push-notifications:mergeReleaseJniLibFolders
+> Task :capacitor-push-notifications:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-push-notifications:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-push-notifications:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-push-notifications:extractDeepLinksForAarRelease
+> Task :capacitor-push-notifications:extractReleaseAnnotations
+> Task :capacitor-push-notifications:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-push-notifications:mergeReleaseConsumerProguardFiles
+> Task :capacitor-push-notifications:mergeReleaseShaders
+> Task :capacitor-push-notifications:compileReleaseShaders NO-SOURCE
+> Task :capacitor-push-notifications:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-push-notifications:packageReleaseAssets
+> Task :capacitor-push-notifications:prepareReleaseArtProfile
+> Task :capacitor-push-notifications:mergeReleaseJavaResource
+> Task :capacitor-push-notifications:syncReleaseLibJars
+> Task :capacitor-push-notifications:bundleReleaseLocalLintAar
+> Task :capacitor-share:mergeReleaseJniLibFolders
+> Task :capacitor-share:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-share:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-share:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-share:extractDeepLinksForAarRelease
+> Task :capacitor-share:extractReleaseAnnotations
+> Task :capacitor-share:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-share:mergeReleaseConsumerProguardFiles
+> Task :capacitor-share:mergeReleaseShaders
+> Task :capacitor-share:compileReleaseShaders NO-SOURCE
+> Task :capacitor-share:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-share:packageReleaseAssets
+> Task :capacitor-share:prepareReleaseArtProfile
+> Task :capacitor-share:mergeReleaseJavaResource
+> Task :capacitor-share:syncReleaseLibJars
+> Task :capacitor-share:bundleReleaseLocalLintAar
+> Task :capgo-capacitor-updater:mergeReleaseJniLibFolders
+> Task :capgo-capacitor-updater:mergeReleaseNativeLibs NO-SOURCE
+> Task :capgo-capacitor-updater:stripReleaseDebugSymbols NO-SOURCE
+> Task :capgo-capacitor-updater:copyReleaseJniLibsProjectAndLocalJars
+> Task :capgo-capacitor-updater:extractDeepLinksForAarRelease
+> Task :capgo-capacitor-updater:extractReleaseAnnotations
+> Task :capgo-capacitor-updater:mergeReleaseGeneratedProguardFiles
+> Task :capgo-capacitor-updater:mergeReleaseConsumerProguardFiles
+> Task :capgo-capacitor-updater:mergeReleaseShaders
+> Task :capgo-capacitor-updater:compileReleaseShaders NO-SOURCE
+> Task :capgo-capacitor-updater:generateReleaseAssets UP-TO-DATE
+> Task :capgo-capacitor-updater:packageReleaseAssets
+> Task :capgo-capacitor-updater:prepareReleaseArtProfile
+> Task :capgo-capacitor-updater:mergeReleaseJavaResource
+> Task :capgo-capacitor-updater:syncReleaseLibJars
+> Task :capgo-capacitor-updater:bundleReleaseLocalLintAar
+> Task :codetrix-studio-capacitor-google-auth:mergeReleaseJniLibFolders
+> Task :codetrix-studio-capacitor-google-auth:mergeReleaseNativeLibs NO-SOURCE
+> Task :codetrix-studio-capacitor-google-auth:stripReleaseDebugSymbols NO-SOURCE
+> Task :codetrix-studio-capacitor-google-auth:copyReleaseJniLibsProjectAndLocalJars
+> Task :codetrix-studio-capacitor-google-auth:extractDeepLinksForAarRelease
+> Task :codetrix-studio-capacitor-google-auth:extractReleaseAnnotations
+> Task :codetrix-studio-capacitor-google-auth:mergeReleaseGeneratedProguardFiles
+> Task :codetrix-studio-capacitor-google-auth:mergeReleaseConsumerProguardFiles
+> Task :codetrix-studio-capacitor-google-auth:mergeReleaseShaders
+> Task :codetrix-studio-capacitor-google-auth:compileReleaseShaders NO-SOURCE
+> Task :codetrix-studio-capacitor-google-auth:generateReleaseAssets UP-TO-DATE
+> Task :codetrix-studio-capacitor-google-auth:packageReleaseAssets
+> Task :codetrix-studio-capacitor-google-auth:prepareReleaseArtProfile
+> Task :codetrix-studio-capacitor-google-auth:mergeReleaseJavaResource
+> Task :codetrix-studio-capacitor-google-auth:syncReleaseLibJars
+> Task :codetrix-studio-capacitor-google-auth:bundleReleaseLocalLintAar
+> Task :capacitor-android:mergeReleaseJniLibFolders
+> Task :capacitor-android:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-android:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-android:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-android:extractDeepLinksForAarRelease
+> Task :capacitor-android:extractReleaseAnnotations
+> Task :capacitor-android:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-android:mergeReleaseConsumerProguardFiles
+> Task :capacitor-android:mergeReleaseShaders
+> Task :capacitor-android:compileReleaseShaders NO-SOURCE
+> Task :capacitor-android:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-android:packageReleaseAssets
+> Task :capacitor-android:prepareReleaseArtProfile
+> Task :capacitor-android:mergeReleaseJavaResource
+> Task :capacitor-android:syncReleaseLibJars
+> Task :capacitor-android:bundleReleaseLocalLintAar
+> Task :capacitor-cordova-android-plugins:mergeReleaseJniLibFolders
+> Task :capacitor-cordova-android-plugins:mergeReleaseNativeLibs NO-SOURCE
+> Task :capacitor-cordova-android-plugins:stripReleaseDebugSymbols NO-SOURCE
+> Task :capacitor-cordova-android-plugins:copyReleaseJniLibsProjectAndLocalJars
+> Task :capacitor-cordova-android-plugins:extractDeepLinksForAarRelease
+> Task :capacitor-cordova-android-plugins:extractReleaseAnnotations
+> Task :capacitor-cordova-android-plugins:mergeReleaseGeneratedProguardFiles
+> Task :capacitor-cordova-android-plugins:mergeReleaseConsumerProguardFiles
+> Task :capacitor-cordova-android-plugins:mergeReleaseShaders
+> Task :capacitor-cordova-android-plugins:compileReleaseShaders NO-SOURCE
+> Task :capacitor-cordova-android-plugins:generateReleaseAssets UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:packageReleaseAssets
+> Task :capacitor-cordova-android-plugins:prepareReleaseArtProfile
+> Task :capacitor-cordova-android-plugins:mergeReleaseJavaResource
+> Task :capacitor-cordova-android-plugins:syncReleaseLibJars
+> Task :capacitor-cordova-android-plugins:bundleReleaseLocalLintAar
+> Task :capacitor-android:lintVitalAnalyzeRelease
+
+The Daemon will expire after the build after running out of JVM Metaspace.
+The project memory settings are likely not configured or are configured to an insufficient value.
+The daemon will restart for the next build, which may increase subsequent build times.
+These settings can be adjusted by setting 'org.gradle.jvmargs' in 'gradle.properties'.
+The currently configured max heap space is '1.5 GiB' and the configured max metaspace is '256 MiB'.
+For more information on how to set these values, please refer to https://docs.gradle.org/8.11.1/userguide/build_environment.html#sec:configuring_jvm_memory in the Gradle documentation.
+To disable this warning, set 'org.gradle.daemon.performance.disable-logging=true'.
+Daemon will be stopped at the end of the build after running out of JVM Metaspace
+
+> Task :capacitor-filesystem:compileReleaseKotlin
+w: file:///C:/Users/rarsh/Documents/CodeLab/zefast-mobile-app/node_modules/@capacitor/filesystem/android/src/main/kotlin/com/capacitorjs/plugins/filesystem/FilesystemPlugin.kt:335:31 'downloadFile(PluginCall): Unit' is deprecated. Use @capacitor/file-transfer plugin instead
+w: file:///C:/Users/rarsh/Documents/CodeLab/zefast-mobile-app/node_modules/@capacitor/filesystem/android/src/main/kotlin/com/capacitorjs/plugins/filesystem/LegacyFilesystemImplementation.kt:66:29 Type mismatch: inferred type is String? but String was expected
+w: file:///C:/Users/rarsh/Documents/CodeLab/zefast-mobile-app/node_modules/@capacitor/filesystem/android/src/main/kotlin/com/capacitorjs/plugins/filesystem/LegacyFilesystemImplementation.kt:143:25 Unnecessary non-null assertion (!!) on a non-null receiver of type Boolean
+w: file:///C:/Users/rarsh/Documents/CodeLab/zefast-mobile-app/node_modules/@capacitor/filesystem/android/src/main/kotlin/com/capacitorjs/plugins/filesystem/LegacyFilesystemImplementation.kt:152:21 Unnecessary non-null assertion (!!) on a non-null receiver of type Boolean
+
+> Task :capacitor-filesystem:compileReleaseJavaWithJavac NO-SOURCE
+> Task :capacitor-filesystem:bundleLibCompileToJarRelease
+The message 
+received from the 
+daemon indicates 
+that the daemon 
+has disappeared.
+Build request 
+sent: Build{id=83f
+6dea4-6ad0-44aa-8b
+ed-5df327878dce, c
+urrentDir=C:\Users
+\rarsh\Documents\C
+odeLab\zefast-mobi
+le-app\android}
+Attempting to 
+read last 
+messages from the 
+daemon log...
+Daemon pid: 86124
+  log file: C:\Use
+rs\rarsh\.gradle\d
+aemon\8.11.1\daemo
+n-86124.out.log
+----- Last 20 
+lines from daemon 
+log file - daemon-
+86124.out.log 
+-----
+WARNING: Using 
+flatDir should be 
+avoided because 
+it doesn't 
+support any 
+meta-data formats.
+WARNING: Using 
+flatDir should be 
+avoided because 
+it doesn't 
+support any 
+meta-data formats.
+Note: Some input 
+files use 
+unchecked or 
+unsafe operations.
+Note: Recompile 
+with 
+-Xlint:unchecked 
+for details.
+Note: C:\Users\rar
+sh\Documents\CodeL
+ab\zefast-mobile-a
+pp\node_modules\@c
+apacitor-firebase\
+messaging\android\
+src\main\java\io\c
+apawesome\capacito
+rjs\plugins\fireba
+se\messaging\Fireb
+aseMessagingHelper
+.java uses or 
+overrides a 
+deprecated API.
+Note: Recompile 
+with -Xlint:deprec
+ation for details.
+Note: C:\Users\rar
+sh\Documents\CodeL
+ab\zefast-mobile-a
+pp\node_modules\@c
+apgo\capacitor-upd
+ater\android\src\m
+ain\java\ee\forgr\
+capacitor_updater\
+CapacitorUpdaterPl
+ugin.java uses or 
+overrides a 
+deprecated API.
+Note: Recompile 
+with -Xlint:deprec
+ation for details.
+The Daemon will 
+expire after the 
+build after 
+running out of 
+JVM Metaspace.
+The project 
+memory settings 
+are likely not 
+configured or are 
+configured to an 
+insufficient 
+value.
+The daemon will 
+restart for the 
+next build, which 
+may increase 
+subsequent build 
+times.
+These settings 
+can be adjusted 
+by setting 'org.gr
+adle.jvmargs' in '
+gradle.properties'
+.
+The currently 
+configured max 
+heap space is 
+'1.5 GiB' and the 
+configured max 
+metaspace is '256 
+MiB'.
+For more 
+information on 
+how to set these 
+values, please 
+refer to https://d
+ocs.gradle.org/8.1
+1.1/userguide/buil
+d_environment.html
+#sec:configuring_j
+vm_memory in the 
+Gradle 
+documentation.
+To disable this 
+warning, set 'org.
+gradle.daemon.perf
+ormance.disable-lo
+gging=true'.
+Daemon will be 
+stopped at the 
+end of the build 
+after running out 
+of JVM Metaspace
+w: file:///C:/User
+s/rarsh/Documents/
+CodeLab/zefast-mob
+ile-app/node_modul
+es/@capacitor/file
+system/android/src
+/main/kotlin/com/c
+apacitorjs/plugins
+/filesystem/Filesy
+stemPlugin.kt:335:
+31 'downloadFile(P
+luginCall): Unit' 
+is deprecated. 
+Use @capacitor/fil
+e-transfer plugin 
+instead
+w: file:///C:/User
+s/rarsh/Documents/
+CodeLab/zefast-mob
+ile-app/node_modul
+es/@capacitor/file
+system/android/src
+/main/kotlin/com/c
+apacitorjs/plugins
+/filesystem/Legacy
+FilesystemImplemen
+tation.kt:66:29 
+Type mismatch: 
+inferred type is 
+String? but 
+String was 
+expected
+w: file:///C:/User
+s/rarsh/Documents/
+CodeLab/zefast-mob
+ile-app/node_modul
+es/@capacitor/file
+system/android/src
+/main/kotlin/com/c
+apacitorjs/plugins
+/filesystem/Legacy
+FilesystemImplemen
+tation.kt:143:25 
+Unnecessary 
+non-null 
+assertion (!!) on 
+a non-null 
+receiver of type 
+Boolean
+w: file:///C:/User
+s/rarsh/Documents/
+CodeLab/zefast-mob
+ile-app/node_modul
+es/@capacitor/file
+system/android/src
+/main/kotlin/com/c
+apacitorjs/plugins
+/filesystem/Legacy
+FilesystemImplemen
+tation.kt:152:21 
+Unnecessary 
+non-null 
+assertion (!!) on 
+a non-null 
+receiver of type 
+Boolean----- End 
+of the daemon log 
+-----
+
+JVM crash log 
+found: file:///C:/
+Users/rarsh/Docume
+nts/CodeLab/zefast
+-mobile-app/androi
+d/hs_err_pid86124.
+log
+
+FAILURE: Build 
+failed with an 
+exception.
+
+* What went wrong:
+Gradle build 
+daemon 
+disappeared 
+unexpectedly (it 
+may have been 
+killed or may 
+have crashed)
+
+* Try:
+> Run with 
+--stacktrace 
+option to get the 
+stack trace.
+> Run with --info 
+or --debug option 
+to get more log 
+output.
+> Run with --scan 
+to get full 
+insights.
+> Get more help 
+at https://help.gr
+adle.org.
+> Task :app:compileReleaseJavaWithJavac

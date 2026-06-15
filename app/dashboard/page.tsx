@@ -183,7 +183,7 @@ function DashboardContent() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
-                src="/Zefast-logo.png" 
+                src="/Zefast-logo.webp" 
                 alt="Zefast Logo" 
                 className="h-18 w-auto object-contain"
               />

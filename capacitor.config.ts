@@ -4,18 +4,13 @@ const config: CapacitorConfig = {
   appId: "com.zefast.app",
   appName: "Zefast",
   webDir: "out",
-  //bundledWebRuntime: false,
-  // plugins: {
-  //   CapacitorUpdater: {
-  //     autoUpdate: false
-  //   }
-  // },
-  // plugins: {
-  //   CapacitorUpdater: {
-  //     autoUpdate: true,
-  //     server: "https://turnaicash-mobile-app-1-p3ef20nbk-codelabbjgmailcoms-projects.vercel.app",
-  //   }
-  // },
+  plugins: {
+    GoogleAuth: {
+      scopes: ["profile", "email"],
+      serverClientId: "571907882935-cui1dgm3emj9grpqh255t3a19enkoe38.apps.googleusercontent.com",
+      forceCodeForRefreshToken: true,
+    },
+  },
   server: {
     // androidScheme: "https",
     url: "https://zefast-mobile-app.vercel.app",

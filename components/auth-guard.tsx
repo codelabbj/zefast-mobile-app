@@ -12,7 +12,8 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!isAuthenticated()) {
-      router.push("/login")
+      router.replace("/login")
+      // Keep isChecking true so we show the spinner while redirecting
     } else {
       setIsChecking(false)
     }

@@ -3,8 +3,12 @@ import { getAccessToken } from "./auth"
 
 const getStorage = () => {
   if (typeof window !== "undefined") {
-    const rememberMe = localStorage.getItem("remember_me") === "true"
-    return rememberMe ? localStorage : sessionStorage
+    const rememberMe = localStorage.getItem("remember_me")
+    // Default to localStorage if never set (fresh install)
+    if (rememberMe === null || rememberMe === "true") {
+      return localStorage
+    }
+    return sessionStorage
   }
   return localStorage
 }
@@ -43,7 +47,7 @@ api.interceptors.response.use(
           }
 
           const res = await axios.post(
-            `${process.env.NEXT_PUBLIC_BASE_URL || "https://api.zefast.net/"}auth/refresh`,
+            `${(process.env.NEXT_PUBLIC_BASE_URL || "https://api.zefast.net").replace(/\/$/, "")}/auth/refresh`,
             { refresh },
           )
 

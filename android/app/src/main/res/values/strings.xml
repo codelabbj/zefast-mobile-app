@@ -4,4 +4,5 @@
     <string name="title_activity_main">zefast</string>
     <string name="package_name">com.zefast.app</string>
     <string name="custom_url_scheme">com.zefast.app</string>
+    <string name="server_client_id">571907882935-cui1dgm3emj9grpqh255t3a19enkoe38.apps.googleusercontent.com</string>
 </resources>

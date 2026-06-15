@@ -42,11 +42,9 @@ android {
     compileSdkVersion 35
 
     defaultConfig {
-//        applicationId "com.turnaicash.android"
-        applicationId "com.zefast.app"   // ✅ correct
-        minSdkVersion 23
-        targetSdkVersion 34
-        //targetSdkVersion 35  // <-- update this too for consistency
+        applicationId "com.zefast.app"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
 
         versionCode 2
         versionName "1.0.2"
@@ -65,8 +63,9 @@ android {
     buildTypes {
         release {
              signingConfig signingConfigs.release
-            //minifyEnabled false
-            //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
