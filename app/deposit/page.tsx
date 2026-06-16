@@ -101,6 +101,7 @@ function DepositContent() {
       return await transactionApi.getLastTransaction()
     },
     refetchOnWindowFocus: false,
+    retry: false,
   })
 
   useEffect(() => {

@@ -3,8 +3,15 @@ import type { Transaction } from "./types"
 
 export const transactionApi = {
     getLastTransaction: async () => {
-        const { data } = await api.get<Transaction>("/mobcash/last-transaction")
-        return data
+        try {
+            const { data } = await api.get<Transaction>("/mobcash/last-transaction")
+            return data ?? null
+        } catch (error: any) {
+            // 404 means no transaction exists — return null silently
+            if (error?.response?.status === 404) return null
+            // For any other error also suppress, so the dialog is never shown
+            return null
+        }
     },
 
     cancelTransaction: async (reference: string) => {
