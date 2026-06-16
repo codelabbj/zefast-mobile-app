@@ -77,8 +77,16 @@ export class NotificationService {
     const { PushNotifications } = await import('@capacitor/push-notifications');
     const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
 
-    // Ask for permission
-    const status = await PushNotifications.requestPermissions();
+    // Ask for permission — wrapped in try/catch because calling this before
+    // the Capacitor bridge is fully ready throws a NullPointerException on Android
+    let status: { receive: string };
+    try {
+      status = await PushNotifications.requestPermissions();
+    } catch (error) {
+      console.error('requestPermissions failed (bridge not ready?):', error);
+      return;
+    }
+
     if (status.receive !== 'granted') {
       console.log('No permission granted for push notifications');
       return;
@@ -150,13 +158,19 @@ export class NotificationService {
 
     const platform = Capacitor.getPlatform();
     
-    // Only request permissions on mobile platforms (ios/android)
     if (platform === 'ios' || platform === 'android') {
       try {
         const { PushNotifications } = await import('@capacitor/push-notifications');
         
-        // Request permission - this will show the native permission dialog
-        const status = await PushNotifications.requestPermissions();
+        // Guard: requestPermissions can NPE if called before the Capacitor
+        // bridge/Activity is fully ready. Wrap in try/catch so it never crashes the app.
+        let status: { receive: string };
+        try {
+          status = await PushNotifications.requestPermissions();
+        } catch (error) {
+          console.error('requestPermissions failed (bridge not ready):', error);
+          return;
+        }
         
         if (status.receive === 'granted') {
           // Register for push notifications

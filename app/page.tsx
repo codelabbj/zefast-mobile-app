@@ -3,13 +3,11 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { isAuthenticated } from "@/lib/auth"
-import { checkForUpdates } from '@/lib/updater';
 
 export default function HomePage() {
   const router = useRouter()
 
   useEffect(() => {
-    checkForUpdates();
     if (isAuthenticated()) {
       router.push("/dashboard")
     } else {

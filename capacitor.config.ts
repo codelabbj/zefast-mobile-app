@@ -10,11 +10,13 @@ const config: CapacitorConfig = {
       serverClientId: "571907882935-cui1dgm3emj9grpqh255t3a19enkoe38.apps.googleusercontent.com",
       forceCodeForRefreshToken: true,
     },
+    CapacitorUpdater: {
+      autoUpdate: false,
+    },
   },
   server: {
-    // androidScheme: "https",
     url: "https://zefast-mobile-app.vercel.app",
-    cleartext: false
+    cleartext: false,
   },
 }
 

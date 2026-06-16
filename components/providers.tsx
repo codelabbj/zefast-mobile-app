@@ -25,7 +25,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   )
 
   useEffect(() => {
-    notificationService.initialize();
+    // Do NOT call notificationService.initialize() here.
+    // Calling PushNotifications.requestPermissions() too early (before the
+    // Capacitor bridge and Activity are fully ready) causes a fatal
+    // NullPointerException on Android. Push notifications are initialized
+    // after login instead, via notificationService.initialize() in the
+    // login flow / dashboard entry point.
   }, []);
 
   return (
