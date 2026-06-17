@@ -20,11 +20,17 @@ export async function signInWithGoogle(): Promise<GoogleAuthResult> {
 
     if (platform === "android" || platform === "ios") {
       // ── Natif Capacitor ─────────────────────────────────────────────
-      // NOTE: Do NOT call GoogleAuth.initialize() on native — it is
-      // configured via capacitor.config.ts (serverClientId) and the
-      // google-services.json. Calling it at runtime overwrites the
-      // native config and causes "something went wrong".
+      // This plugin version (3.4.0-rc.4) has an empty load() method —
+      // googleSignInClient stays null until initialize() is called.
+      // We must call initialize() before signIn() or signIn() NPEs.
       const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth")
+      
+      await GoogleAuth.initialize({
+        clientId: "571907882935-chc25lb4d2drev2aog1l581ms2g2tnag.apps.googleusercontent.com",
+        scopes: ["profile", "email"],
+        grantOfflineAccess: true,
+      })
+
       const googleUser = await GoogleAuth.signIn()
       idToken = (googleUser as any)?.idToken ?? googleUser?.authentication?.idToken ?? null
 
