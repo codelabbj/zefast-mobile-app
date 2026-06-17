@@ -28,6 +28,8 @@ const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
 export class NotificationService {
   private token: string | null = null;
   private platform: string = 'web';
+  // Prevent duplicate initialisation on mobile
+  private mobileInitialised = false;
 
   async initialize() {
     if (typeof window === 'undefined') return;
@@ -37,9 +39,10 @@ export class NotificationService {
     try {
       if (this.platform === 'web') {
         await this.initWeb();
-      } else {
-        await this.initMobile();
       }
+      // Mobile init is intentionally NOT called here.
+      // Call initMobileWhenReady() from the dashboard instead,
+      // so the Capacitor bridge / Activity is fully active first.
     } catch (error) {
       console.error('Notification init error:', error);
     }
@@ -60,7 +63,6 @@ export class NotificationService {
     onMessage(messaging, (payload) => {
       console.log('Message received:', payload);
 
-      // Dispatch custom event for in-app notification display
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('inAppNotification', {
           detail: {
@@ -73,49 +75,104 @@ export class NotificationService {
     });
   }
 
-  private async initMobile() {
-    const { PushNotifications } = await import('@capacitor/push-notifications');
-    const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
+  /**
+   * Safe mobile initialisation.
+   *
+   * MUST be called from a mounted React component (e.g. dashboard useEffect),
+   * NEVER from a login handler or navigation callback.
+   *
+   * Strategy:
+   * 1. Wait for the App plugin to report the app is active (foreground).
+   * 2. checkPermissions() first — only call requestPermissions() when status
+   *    is 'prompt'. Never call it when already 'granted' or 'denied'.
+   * 3. An additional 500 ms settling delay before any PushNotifications call
+   *    to avoid the NullPointerException on the CapacitorPlugins thread.
+   */
+  async initMobileWhenReady(): Promise<void> {
+    if (typeof window === 'undefined') return;
+    if (Capacitor.getPlatform() === 'web') return;
+    if (this.mobileInitialised) return;
+    this.mobileInitialised = true;
 
-    // Ask for permission — wrapped in try/catch because calling this before
-    // the Capacitor bridge is fully ready throws a NullPointerException on Android.
-    // The 800ms delay ensures the Activity/bridge is fully initialised before we
-    // touch the permission system, preventing the CapacitorPlugins thread crash.
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    let status: { receive: string };
     try {
-      status = await PushNotifications.requestPermissions();
+      const { App } = await import('@capacitor/app');
+      const { PushNotifications } = await import('@capacitor/push-notifications');
+
+      // Wait until the app is in the foreground (active).
+      // If it already is, the promise resolves immediately.
+      await new Promise<void>((resolve) => {
+        App.getState().then((state) => {
+          if (state.isActive) {
+            resolve();
+          } else {
+            const handle = App.addListener('appStateChange', (s) => {
+              if (s.isActive) {
+                handle.then(h => h.remove());
+                resolve();
+              }
+            });
+          }
+        }).catch(() => {
+          // Fallback: just proceed after a delay if App plugin fails
+          setTimeout(resolve, 1000);
+        });
+      });
+
+      // Extra settling time after the Activity becomes active
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // Check current permission state — never call requestPermissions()
+      // unless the status is genuinely 'prompt'.
+      let permStatus: { receive: string };
+      try {
+        permStatus = await PushNotifications.checkPermissions();
+      } catch (e) {
+        console.warn('checkPermissions failed, skipping notifications:', e);
+        return;
+      }
+
+      if (permStatus.receive === 'prompt') {
+        try {
+          permStatus = await PushNotifications.requestPermissions();
+        } catch (e) {
+          console.warn('requestPermissions failed:', e);
+          return;
+        }
+      }
+
+      if (permStatus.receive !== 'granted') {
+        console.log('Push notification permission not granted:', permStatus.receive);
+        return;
+      }
+
+      await this.registerAndListen(PushNotifications);
+
     } catch (error) {
-      console.error('requestPermissions failed (bridge not ready?):', error);
+      console.error('initMobileWhenReady error:', error);
+    }
+  }
+
+  private async registerAndListen(PushNotifications: any): Promise<void> {
+    try {
+      await PushNotifications.register();
+    } catch (e) {
+      console.error('PushNotifications.register() failed:', e);
       return;
     }
 
-    if (status.receive !== 'granted') {
-      console.log('No permission granted for push notifications');
-      return;
-    }
-
-    // Register for push notifications
-    await PushNotifications.register();
-
-    // Listen for the registration token
-    PushNotifications.addListener('registration', (token) => {
+    PushNotifications.addListener('registration', (token: any) => {
       this.token = token.value;
       console.log('FCM Token:', token.value);
       localStorage.setItem('fcm_token', token.value);
     });
 
-    // Listen for registration errors
-    PushNotifications.addListener('registrationError', (error) => {
+    PushNotifications.addListener('registrationError', (error: any) => {
       console.error('Registration error:', error);
     });
 
-    // Foreground notification
-    PushNotifications.addListener('pushNotificationReceived', (notification) => {
+    PushNotifications.addListener('pushNotificationReceived', (notification: any) => {
       console.log('Push received in foreground:', notification);
 
-      // Dispatch custom event for in-app notification display
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('inAppNotification', {
           detail: {
@@ -127,13 +184,13 @@ export class NotificationService {
       }
     });
 
-    // Background notification + tapped
-    PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
+    PushNotifications.addListener('pushNotificationActionPerformed', (action: any) => {
       console.log('Push action:', action);
     });
 
-    // Also try to get token via Firebase Messaging (fallback)
+    // Also get token via Firebase Messaging as fallback
     try {
+      const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
       const result = await FirebaseMessaging.getToken();
       if (result.token) {
         this.token = result.token;
@@ -154,81 +211,16 @@ export class NotificationService {
   }
 
   /**
-   * Request notification permissions for mobile platforms
-   * This should be called after login and before showing the dashboard
+   * @deprecated Use initMobileWhenReady() from a mounted dashboard component.
+   * Kept for compatibility — now a no-op on mobile to prevent crashes.
    */
   async requestMobileNotificationPermissions(): Promise<void> {
-    if (typeof window === 'undefined') return;
-
-    const platform = Capacitor.getPlatform();
-    
-    if (platform === 'ios' || platform === 'android') {
-      try {
-        const { PushNotifications } = await import('@capacitor/push-notifications');
-        
-        // Guard: requestPermissions throws a NullPointerException on the
-        // CapacitorPlugins thread when called immediately after login/navigation
-        // because the Activity context hasn't settled yet. The try/catch in the
-        // JS layer does NOT catch this — the Android runtime kills the thread.
-        // Waiting 800ms gives the bridge time to fully stabilise.
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        let status: { receive: string };
-        try {
-          status = await PushNotifications.requestPermissions();
-        } catch (error) {
-          console.error('requestPermissions failed (bridge not ready):', error);
-          return;
-        }
-        
-        if (status.receive === 'granted') {
-          // Register for push notifications
-          await PushNotifications.register();
-
-          // Listen for the registration token
-          PushNotifications.addListener('registration', (token) => {
-            this.token = token.value;
-            console.log('FCM Token:', token.value);
-            localStorage.setItem('fcm_token', token.value);
-          });
-
-          // Listen for registration errors
-          PushNotifications.addListener('registrationError', (error) => {
-            console.error('Registration error:', error);
-          });
-
-          // Foreground notification
-          PushNotifications.addListener('pushNotificationReceived', (notification) => {
-            console.log('Push received in foreground:', notification);
-          });
-
-          // Background notification + tapped
-          PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-            console.log('Push action:', action);
-          });
-
-          // Also try to get token via Firebase Messaging (fallback)
-          try {
-            const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
-            const result = await FirebaseMessaging.getToken();
-            if (result.token) {
-              this.token = result.token;
-              console.log('FCM Token (Firebase Messaging):', result.token);
-              localStorage.setItem('fcm_token', result.token);
-            }
-          } catch (error) {
-            console.error('Firebase Messaging token error:', error);
-          }
-        } else {
-          console.log('Notification permission not granted');
-        }
-      } catch (error) {
-        console.error('Error requesting notification permissions:', error);
-      }
-    }
+    // No-op: all mobile permission logic moved to initMobileWhenReady()
+    // which is called safely from the dashboard useEffect.
+    console.log('requestMobileNotificationPermissions: delegating to initMobileWhenReady()');
+    return this.initMobileWhenReady();
   }
 }
 
 export const notificationService = new NotificationService();
 export default app;
-

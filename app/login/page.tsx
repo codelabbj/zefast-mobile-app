@@ -8,8 +8,7 @@ import { useRouter } from "next/navigation"
 import { useTranslation } from "react-i18next"
 import toast from "react-hot-toast"
 import Link from "next/link"
-import { Capacitor } from "@capacitor/core"
-import { Eye, EyeOff, Mail, ArrowLeft } from "lucide-react"
+import { Eye, EyeOff, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -18,7 +17,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import api from "@/lib/api"
 import { saveAuthData, type AuthResponse } from "@/lib/auth"
-import { notificationService } from "@/lib/firebase-notifications"
 import { GoogleButton } from "@/components/google-button"
 
 const loginSchema = z.object({
@@ -141,55 +139,17 @@ export default function LoginPage() {
     setConfirmNewPassword("")
   }
 
-  // Function to register FCM token with backend
-  const registerFcmToken = async (userId: string, accessToken: string) => {
-    try {
-      const fcmToken = notificationService.getToken()
-      if (!fcmToken) {
-        console.log('No FCM token available for registration')
-        return
-      }
-
-      console.log('Registering FCM token with backend:', fcmToken)
-
-      // Send FCM token to backend API
-      await api.post('/mobcash/devices/', {
-        registration_id: fcmToken,
-        type: 'android',
-        user_id: userId
-      })
-
-      console.log('FCM token registered successfully')
-    } catch (error) {
-      console.error('Error registering FCM token:', error)
-      // Don't block login if FCM registration fails
-    }
-  }
-
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true)
     try {
       const response = await api.post<AuthResponse>("/auth/login", data)
-      const { access, data: userData } = response.data
 
       saveAuthData(response.data, rememberMe)
       toast.success("Connexion réussie!")
 
-      // Register FCM token with backend after successful login
-      await registerFcmToken(userData.id, access)
-
-      // Navigate first — permission request must happen AFTER the Activity has
-      // fully settled on the new route, otherwise Capacitor's permission system
-      // throws a NullPointerException on the CapacitorPlugins thread (uncatchable).
+      // Navigate to dashboard — notification permissions are requested from
+      // the dashboard's useEffect (after the Activity is fully active).
       router.push("/dashboard")
-
-      // Request notification permissions after navigation (fire-and-forget)
-      const platform = Capacitor.getPlatform()
-      if (platform === 'ios' || platform === 'android') {
-        notificationService.requestMobileNotificationPermissions().catch((error) => {
-          console.error('Error requesting notification permissions:', error)
-        })
-      }
     } catch (error: any) {
       toast.error(error.message || "Erreur de connexion")
     } finally {

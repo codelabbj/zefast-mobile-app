@@ -45,6 +45,9 @@ function DashboardContent() {
   // Send FCM token to backend and setup notifications on app visit if user is authenticated
   useEffect(() => {
     if (mounted && user) {
+      // Initialise push notifications safely — this waits for the Capacitor
+      // bridge / Activity to be fully active before touching PushNotifications.
+      notificationService.initMobileWhenReady()
       sendFcmTokenToBackend()
       setupNotificationListeners()
     }

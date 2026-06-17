@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signInWithGoogle } from "@/lib/google-auth"
-import { Capacitor } from "@capacitor/core"
 import { notificationService } from "@/lib/firebase-notifications"
 import api from "@/lib/api"
 import { getUser, getAccessToken } from "@/lib/auth"
@@ -105,18 +104,9 @@ export function GoogleButton({ mode = "login", disabled = false }: GoogleButtonP
           await registerFcmToken(userData.id, accessToken)
         }
 
-        // Navigate first — permission request must happen AFTER the Activity has
-        // fully settled on the new route, otherwise Capacitor's permission system
-        // throws a NullPointerException on the CapacitorPlugins thread (uncatchable).
+        // Navigate to dashboard — notification permissions are requested from
+        // the dashboard's useEffect (after the Activity is fully active).
         router.push("/dashboard")
-
-        // Request notification permissions after navigation (fire-and-forget)
-        const platform = Capacitor.getPlatform()
-        if (platform === 'ios' || platform === 'android') {
-          notificationService.requestMobileNotificationPermissions().catch((error) => {
-            console.error('Error requesting notification permissions:', error)
-          })
-        }
       } else {
         toast.error(result.error || "Erreur lors de la connexion avec Google")
       }
