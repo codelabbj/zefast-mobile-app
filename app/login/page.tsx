@@ -174,22 +174,22 @@ export default function LoginPage() {
 
       saveAuthData(response.data, rememberMe)
       toast.success("Connexion réussie!")
-      
-      // Request notification permissions on mobile before showing dashboard
-      const platform = Capacitor.getPlatform()
-      if (platform === 'ios' || platform === 'android') {
-        try {
-          await notificationService.requestMobileNotificationPermissions()
-        } catch (error) {
-          console.error('Error requesting notification permissions:', error)
-          // Continue to dashboard even if permission request fails
-        }
-      }
 
       // Register FCM token with backend after successful login
       await registerFcmToken(userData.id, access)
-      
+
+      // Navigate first — permission request must happen AFTER the Activity has
+      // fully settled on the new route, otherwise Capacitor's permission system
+      // throws a NullPointerException on the CapacitorPlugins thread (uncatchable).
       router.push("/dashboard")
+
+      // Request notification permissions after navigation (fire-and-forget)
+      const platform = Capacitor.getPlatform()
+      if (platform === 'ios' || platform === 'android') {
+        notificationService.requestMobileNotificationPermissions().catch((error) => {
+          console.error('Error requesting notification permissions:', error)
+        })
+      }
     } catch (error: any) {
       toast.error(error.message || "Erreur de connexion")
     } finally {

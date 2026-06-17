@@ -20,8 +20,11 @@ export async function signInWithGoogle(): Promise<GoogleAuthResult> {
 
     if (platform === "android" || platform === "ios") {
       // ── Natif Capacitor ─────────────────────────────────────────────
+      // NOTE: Do NOT call GoogleAuth.initialize() on native — it is
+      // configured via capacitor.config.ts (serverClientId) and the
+      // google-services.json. Calling it at runtime overwrites the
+      // native config and causes "something went wrong".
       const { GoogleAuth } = await import("@codetrix-studio/capacitor-google-auth")
-      await GoogleAuth.initialize()
       const googleUser = await GoogleAuth.signIn()
       idToken = (googleUser as any)?.idToken ?? googleUser?.authentication?.idToken ?? null
 

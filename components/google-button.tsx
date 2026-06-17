@@ -97,16 +97,6 @@ export function GoogleButton({ mode = "login", disabled = false }: GoogleButtonP
       const result = await signInWithGoogle()
       if (result.success) {
         toast.success(mode === "register" ? "Compte créé avec succès!" : "Connexion réussie!")
-        
-        // Request notification permissions on mobile before dashboard
-        const platform = Capacitor.getPlatform()
-        if (platform === 'ios' || platform === 'android') {
-          try {
-            await notificationService.requestMobileNotificationPermissions()
-          } catch (error) {
-            console.error('Error requesting notification permissions:', error)
-          }
-        }
 
         // Register FCM token
         const userData = getUser()
@@ -115,7 +105,18 @@ export function GoogleButton({ mode = "login", disabled = false }: GoogleButtonP
           await registerFcmToken(userData.id, accessToken)
         }
 
+        // Navigate first — permission request must happen AFTER the Activity has
+        // fully settled on the new route, otherwise Capacitor's permission system
+        // throws a NullPointerException on the CapacitorPlugins thread (uncatchable).
         router.push("/dashboard")
+
+        // Request notification permissions after navigation (fire-and-forget)
+        const platform = Capacitor.getPlatform()
+        if (platform === 'ios' || platform === 'android') {
+          notificationService.requestMobileNotificationPermissions().catch((error) => {
+            console.error('Error requesting notification permissions:', error)
+          })
+        }
       } else {
         toast.error(result.error || "Erreur lors de la connexion avec Google")
       }

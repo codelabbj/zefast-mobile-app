@@ -78,7 +78,11 @@ export class NotificationService {
     const { FirebaseMessaging } = await import('@capacitor-firebase/messaging');
 
     // Ask for permission — wrapped in try/catch because calling this before
-    // the Capacitor bridge is fully ready throws a NullPointerException on Android
+    // the Capacitor bridge is fully ready throws a NullPointerException on Android.
+    // The 800ms delay ensures the Activity/bridge is fully initialised before we
+    // touch the permission system, preventing the CapacitorPlugins thread crash.
+    await new Promise(resolve => setTimeout(resolve, 800));
+
     let status: { receive: string };
     try {
       status = await PushNotifications.requestPermissions();
@@ -162,8 +166,13 @@ export class NotificationService {
       try {
         const { PushNotifications } = await import('@capacitor/push-notifications');
         
-        // Guard: requestPermissions can NPE if called before the Capacitor
-        // bridge/Activity is fully ready. Wrap in try/catch so it never crashes the app.
+        // Guard: requestPermissions throws a NullPointerException on the
+        // CapacitorPlugins thread when called immediately after login/navigation
+        // because the Activity context hasn't settled yet. The try/catch in the
+        // JS layer does NOT catch this — the Android runtime kills the thread.
+        // Waiting 800ms gives the bridge time to fully stabilise.
+        await new Promise(resolve => setTimeout(resolve, 800));
+
         let status: { receive: string };
         try {
           status = await PushNotifications.requestPermissions();

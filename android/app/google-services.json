@@ -12,7 +12,20 @@
           "package_name": "com.zefast.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "571907882935-cui1dgm3emj9grpqh255t3a19enkoe38.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zefast.app",
+            "certificate_hash": "d4ae7ffd39d9eec879bb988c9538fda8bc82f4a4"
+          }
+        },
+        {
+          "client_id": "571907882935-chc25lb4d2drev2aog1l581ms2g2tnag.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDwOlZ7Hsdera6XadIgvLhisv3onRfR4C4"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "571907882935-chc25lb4d2drev2aog1l581ms2g2tnag.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
